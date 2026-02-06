@@ -2,11 +2,11 @@
 
 import { Button } from "@repo/ui/components/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from "@repo/ui/components/card";
 import { Input } from "@repo/ui/components/input";
 import { useAppForm } from "@repo/ui/components/tanstack-form";
@@ -65,46 +65,35 @@ export function SigninForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl font-heading font-bold">
-            Welcome back
+    <div className={cn("flex flex-col gap-8", className)} {...props}>
+      <Card className="border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[32px] overflow-hidden bg-white/80 backdrop-blur-xl ring-1 ring-black/5">
+        <CardHeader className="pt-10 pb-2 text-center space-y-2">
+          <CardTitle className="text-3xl font-heading font-black tracking-tight text-foreground">
+            Welcome Back
           </CardTitle>
-          <CardDescription>Signin with your Email</CardDescription>
+          <CardDescription className="text-base font-medium text-muted-foreground/80">
+            Enter your credentials to access your account
+          </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-8 pt-6">
           <form.AppForm>
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-6">
-                {/* <div className="flex flex-col gap-4">
-                  <Button variant="outline" className="w-full">
-                    <CiFacebook className="size-5" />
-                    Signin with Facebook
-                  </Button>
-                </div>
-                <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                  <span className="bg-card text-muted-foreground relative z-10 px-2">
-                    Or continue with
-                  </span>
-                </div> */}
-
-                {/* -------- */}
-
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-5">
                 <form.AppField
                   name="email"
                   children={(field) => (
-                    <field.FormItem>
-                      <field.FormLabel>Email</field.FormLabel>
+                    <field.FormItem className="space-y-2">
+                      <field.FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70 ml-1">Email Address</field.FormLabel>
                       <field.FormControl>
                         <Input
-                          placeholder="john@example.com"
+                          placeholder="name@company.com"
+                          className="h-14 rounded-2xl border-black/5 bg-secondary/30 focus-visible:ring-primary focus-visible:border-primary transition-all text-base"
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                         />
                       </field.FormControl>
-                      <field.FormMessage />
+                      <field.FormMessage className="text-xs font-bold text-rose-500" />
                     </field.FormItem>
                   )}
                 />
@@ -112,57 +101,66 @@ export function SigninForm({
                 <form.AppField
                   name="password"
                   children={(field) => (
-                    <field.FormItem>
-                      <div className="w-full flex items-center justify-between">
-                        <field.FormLabel>Password</field.FormLabel>
+                    <field.FormItem className="space-y-2">
+                      <div className="flex items-center justify-between ml-1">
+                        <field.FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">Password</field.FormLabel>
                         <Link
                           href="/forgot-password"
-                          className="text-xs text-secondary-foreground underline-offset-4 hover:underline"
+                          className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                         >
                           Forgot Password?
                         </Link>
                       </div>
                       <field.FormControl>
                         <Input
-                          placeholder=""
+                          type="password"
+                          placeholder="••••••••"
+                          className="h-14 rounded-2xl border-black/5 bg-secondary/30 focus-visible:ring-primary focus-visible:border-primary transition-all text-base"
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                         />
                       </field.FormControl>
-                      <field.FormMessage />
+                      <field.FormMessage className="text-xs font-bold text-rose-500" />
                     </field.FormItem>
                   )}
                 />
+              </div>
 
-                {/* -------- */}
+              <Button
+                type="submit"
+                className="w-full h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 hover:shadow-primary/30 active:scale-[0.98] transition-all"
+                loading={form.state.isSubmitting}
+                icon={form.state.isSubmitSuccessful && <CheckIcon className="size-5" />}
+              >
+                Sign In to Account
+              </Button>
 
-                <div className="grid gap-6">
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    loading={form.state.isSubmitting}
-                    icon={form.state.isSubmitSuccessful && <CheckIcon />}
-                  >
-                    Sign In
-                  </Button>
+              <div className="relative py-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-black/5" />
                 </div>
-                <div className="text-center text-sm">
-                  {`Don't have an account?`}
-                  {` `}
-                  <Link href="/signup" className="underline underline-offset-4">
-                    Sign Up
-                  </Link>
+                <div className="relative flex justify-center text-xs uppercase font-bold tracking-widest">
+                  <span className="bg-white px-4 text-muted-foreground/40 italic">New to CoreWavez?</span>
                 </div>
               </div>
+
+              <Button
+                variant="outline"
+                asChild
+                className="w-full h-14 rounded-2xl text-lg font-bold border-black/5 hover:bg-secondary/50 transition-all"
+              >
+                <Link href="/signup">Create Free Account</Link>
+              </Button>
             </form>
           </form.AppForm>
         </CardContent>
       </Card>
-      <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
-      </div>
+      <p className="text-center text-xs font-bold tracking-tight text-muted-foreground/60 max-w-[300px] mx-auto leading-relaxed">
+        By continuing, you agree to our{" "}
+        <a href="#" className="text-foreground hover:text-primary transition-colors underline decoration-black/10 underline-offset-4">Terms</a> and{" "}
+        <a href="#" className="text-foreground hover:text-primary transition-colors underline decoration-black/10 underline-offset-4">Privacy Policy</a>
+      </p>
     </div>
   );
 }

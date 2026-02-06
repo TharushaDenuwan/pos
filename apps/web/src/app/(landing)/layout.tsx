@@ -1,3 +1,5 @@
+import { ShopFooter } from "@/components/layout/ShopFooter";
+import { ShopHeader } from "@/components/layout/ShopHeader";
 import React from "react";
 
 type Props = {
@@ -6,8 +8,12 @@ type Props = {
 
 export default function HomepageLayout({ children }: Props) {
   return (
-    <div>
-      {children}
+    <div className="flex flex-col min-h-screen">
+      <ShopHeader />
+      <main className="flex-grow">
+        {children}
+      </main>
+      <ShopFooter />
     </div>
   );
 }

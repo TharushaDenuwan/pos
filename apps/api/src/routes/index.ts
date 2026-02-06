@@ -4,7 +4,6 @@ import { AppOpenAPI } from "@api/types";
 import { BASE_PATH } from "../lib/constants";
 // import housing from "./housing/housing.index";
 import index from "./index.route";
-import job from "./job/job.index";
 import media from "./media/media.index";
 import task from "./task/task.index";
 import tasks from "./tasks/tasks.index";
@@ -23,7 +22,7 @@ export function registerRoutes(app: AppOpenAPI) {
       // .route("/orders", orders)
       .route("/media", media)
       // .route("/housing", housing)
-      .route("/job", job)
+
       .route("/task", task)
       .route("/worker", worker)
       .route("/worker_categories", worker_categories)
