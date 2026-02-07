@@ -1,18 +1,23 @@
 "use client";
 
-import { IconDashboard, IconSettings, IconUsers } from "@tabler/icons-react";
+import {
+    IconDashboard,
+    IconPackage,
+    IconSettings,
+    IconShieldLock
+} from "@tabler/icons-react";
 import * as React from "react";
 
 // import { NavMain } from "@/components/dashboard/nav-main";
 import { NavStore } from "@/components/dashboard/nav-store";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
 } from "@repo/ui/components/sidebar";
 import Link from "next/link";
 import { Logo } from "../logo";
@@ -28,43 +33,41 @@ const data = {
     },
   ],
   navStore: [
-    // {
-    //   title: "Products",
-    //   icon: IconCamera,
-    //   isActive: false,
-    //   url: "/admin/products",
-    //   items: [
-    //     {
-    //       title: "New Product",
-    //       url: "/admin/products/new",
-    //     },
-    //     {
-    //       title: "Categories",
-    //       url: "/admin/products/categories",
-    //     },
-    //   ],
-    // },
-
-    // {
-    //   title: "Housing",
-    //   icon: IconUsers,
-    //   isActive: false,
-    //   url: "/dashboard/housing",
-    //   items: [],
-    // },
     {
-      title: "Job",
-      icon: IconUsers,
-      isActive: false,
-      url: "/dashboard/job",
-      items: [],
+      title: "Store Management",
+      icon: IconPackage,
+      isActive: true,
+      url: "/admin/arrivals",
+      items: [
+        {
+          title: "New Arrivals",
+          url: "/admin/arrivals",
+        },
+        {
+          title: "Orders",
+          url: "/admin/orders",
+        },
+        {
+          title: "Reviews",
+          url: "/admin/reviews",
+        },
+      ],
     },
     {
-      title: "Worker",
-      icon: IconUsers,
+      title: "Administration",
+      icon: IconShieldLock,
       isActive: false,
-      url: "/dashboard/worker",
-      items: [],
+      url: "/admin/users",
+      items: [
+        {
+          title: "User Management",
+          url: "/admin/users",
+        },
+        {
+          title: "Staff Operations",
+          url: "/admin/staff",
+        },
+      ],
     },
   ],
   navSecondary: [
