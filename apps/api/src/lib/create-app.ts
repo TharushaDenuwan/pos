@@ -28,7 +28,7 @@ export default function createApp(): OpenAPIHono<AppBindings> {
   app.use(
     "*", // "*" enables cors for all routes
     cors({
-      origin: [env.CLIENT_APP_URL], // replace with your origin
+      origin: [env.CLIENT_APP_URL, "http://127.0.0.1:3000"], // replace with your origin
       allowHeaders: ["Content-Type", "Authorization"],
       allowMethods: ["POST", "GET", "PUT", "DELETE", "PATCH", "OPTIONS"],
       exposeHeaders: ["Content-Length"],

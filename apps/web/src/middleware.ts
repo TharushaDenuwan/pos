@@ -57,7 +57,7 @@ export default async function authMiddleware(request: NextRequest) {
      * If user role is admin, continue,
      */
     if (pathname.startsWith("/admin") && session) {
-      if (session.user.role !== "admin") {
+      if (session.user.role !== "admin" && session.user.role !== "staff") {
         return NextResponse.redirect(new URL("/404", request.url));
       }
     } else if (pathname.startsWith("/account") && session) {

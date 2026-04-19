@@ -1,0 +1,1 @@
+ALTER TABLE "hire_management" ADD COLUMN "vehicle_type" text DEFAULT 'KDH' NOT NULL;

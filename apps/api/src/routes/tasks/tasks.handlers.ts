@@ -9,29 +9,32 @@ import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@api/lib/constants";
 import { tasks } from "@repo/database/schemas";
 
 import type {
-  CreateRoute,
-  GetOneRoute,
-  ListRoute,
-  PatchRoute,
-  RemoveRoute
+    CreateRoute,
+    GetOneRoute,
+    ListRoute,
+    PatchRoute,
+    RemoveRoute
 } from "./tasks.routes";
 
 // List tasks route handler
 export const list: AppRouteHandler<ListRoute> = async (c) => {
-  const tasks = await db.query.tasks.findMany({
+  const taskList = await db.query.tasks.findMany({
     orderBy(fields) {
       return desc(fields.createdAt);
     }
   });
 
-  return c.json(tasks);
+  return c.json(taskList);
 };
 
 // Create new task route handler
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
   const task = c.req.valid("json");
 
-  const [inserted] = await db.insert(tasks).values(task).returning();
+  const [inserted] = await db.insert(tasks).values({
+    ...task,
+    updatedAt: new Date(),
+  }).returning();
 
   return c.json(inserted, HttpStatusCodes.CREATED);
 };
@@ -58,7 +61,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
   const { id } = c.req.valid("param");
   const updates = c.req.valid("json");
 
-  // Checs at least one field is present in the request body
+  // Check if at least one field is present in the request body
   if (Object.keys(updates).length === 0) {
     return c.json(
       {
@@ -103,9 +106,9 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
 export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
   const { id } = c.req.valid("param");
 
-  const result = await db.delete(tasks).where(eq(tasks.id, id));
+  const deleted = await db.delete(tasks).where(eq(tasks.id, id)).returning();
 
-  if (result.rows.length === 0) {
+  if (deleted.length === 0) {
     return c.json(
       { message: HttpStatusPhrases.NOT_FOUND },
       HttpStatusCodes.NOT_FOUND

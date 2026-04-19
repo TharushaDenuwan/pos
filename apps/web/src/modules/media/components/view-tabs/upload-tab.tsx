@@ -1,21 +1,20 @@
 "use client";
+import { Badge } from "@repo/ui/components/badge";
+import { Button } from "@repo/ui/components/button";
+import { Card } from "@repo/ui/components/card";
 import { IconSlideshow } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
-  CheckCircle2,
-  Loader2,
-  PlusIcon,
-  TrashIcon,
-  UploadIcon,
-  XIcon
+    CheckCircle2,
+    Loader2,
+    PlusIcon,
+    TrashIcon,
+    UploadIcon,
+    XIcon
 } from "lucide-react";
 import Image from "next/image";
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-
-import { Badge } from "@repo/ui/components/badge";
-import { Button } from "@repo/ui/components/button";
-import { Card } from "@repo/ui/components/card";
-
 import { useMediaStore, type MediaFile } from "../../store";
 import { ActiveTab } from "../gallery-view";
 
@@ -27,6 +26,7 @@ type Props = {
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export default function UploadTab({ setCurrentTab }: Props) {
+  const queryClient = useQueryClient();
   const {
     isUploading,
     selectedFiles,
@@ -57,6 +57,7 @@ export default function UploadTab({ setCurrentTab }: Props) {
   // When ready to upload
   const handleUpload = async () => {
     await uploadAllFiles();
+    queryClient.invalidateQueries({ queryKey: ["media"] });
     setCurrentTab("library");
   };
 

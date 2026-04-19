@@ -1,4 +1,3 @@
-import { ShopFooter } from "@/components/layout/ShopFooter";
 import { ShopHeader } from "@/components/layout/ShopHeader";
 import React from "react";
 
@@ -13,7 +12,6 @@ export default function HomepageLayout({ children }: Props) {
       <main className="flex-grow">
         {children}
       </main>
-      <ShopFooter />
     </div>
   );
 }

@@ -6,18 +6,29 @@ import { Button } from "@repo/ui/components/button";
 import { Heart, Star } from "lucide-react";
 
 export function ProductCard({ p }: { p: Product }) {
+  const isSale = (p.originalPrice || 0) > p.price || (p.discount || 0) > 0;
+  // Calculate if new (within 14 days) - need createdAt from API, but Product type might not have it strictly typed unless updated
+  // Assuming p object from API has createdAt even if type definition is loose.
+  // Actually, I should update Type definition if I rely on it.
+
+  const priceDisplay = (p.price / 100).toFixed(2);
+  const hasDiscount = (p.originalPrice || 0) > 0;
+
+  // Image handling: p.image or p.images[0]
+  const displayImage = p.image || (p.images && p.images.length > 0 ? p.images[0] : "") || "/placeholder.jpg";
+
   return (
-    <div key={p.id} className="group">
+    <div className="group">
       <div className="relative aspect-[4/5] rounded-[32px] overflow-hidden bg-white shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ring-1 ring-black/5">
         {p.isNew && (
           <Badge className="absolute top-5 left-5 z-10 bg-primary/90 text-primary-foreground font-black px-3 py-1 rounded-full text-[10px] tracking-widest ring-4 ring-white/10">NEW</Badge>
         )}
-        {p.isSale && (
+        {isSale && (
           <Badge className="absolute top-5 left-5 z-10 bg-rose-500 text-white font-black px-3 py-1 rounded-full text-[10px] tracking-widest ring-4 ring-white/10">SALE</Badge>
         )}
         <img
-          src={p.image}
-          alt={p.title}
+          src={displayImage}
+          alt={p.title || p.name} // p.name from API, p.title from legacy type
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
 
@@ -37,12 +48,17 @@ export function ProductCard({ p }: { p: Product }) {
           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{p.category}</span>
           <div className="flex items-center gap-1.5 bg-amber-50 px-2 py-0.5 rounded-full scale-90">
             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-            <span className="text-[11px] font-black text-amber-700">{p.rating}</span>
+            <span className="text-[11px] font-black text-amber-700">{p.rating?.toFixed(1) || "New"}</span>
           </div>
         </div>
-        <h3 className="font-heading font-bold text-xl leading-tight group-hover:text-primary transition-colors line-clamp-1">{p.title}</h3>
-        <p className="text-2xl font-heading font-black tracking-tight text-foreground">
-          ${p.price}.00
+        <h3 className="font-heading font-bold text-xl leading-tight group-hover:text-primary transition-colors line-clamp-1">{p.title || (p as any).name}</h3>
+        <p className="text-2xl font-heading font-black tracking-tight text-foreground flex items-center gap-2">
+          ${priceDisplay}
+          {hasDiscount && (
+             <span className="text-sm text-muted-foreground line-through decoration-rose-500/50 decoration-2 font-medium">
+                ${(p.originalPrice! / 100).toFixed(2)}
+             </span>
+          )}
         </p>
       </div>
     </div>

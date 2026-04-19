@@ -26,12 +26,14 @@ import {
   Zap
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function ShopHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
 
   useEffect(() => {
@@ -44,50 +46,40 @@ export function ShopHeader() {
 
   return (
     <>
-      <div className="bg-primary text-primary-foreground py-2 text-center text-xs font-medium tracking-wide">
-        FREE SHIPPING ON ORDERS OVER $150 • USE CODE: CLEANING20 FOR 20% OFF
-      </div>
 
       <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         isScrolled ? "bg-background/80 backdrop-blur-xl border-b py-3 shadow-sm" : "bg-transparent py-5"
       }`}>
         <div className="content-container flex items-center justify-between gap-8">
-          <Link href="/" className="flex items-center gap-2 group cursor-pointer">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-primary-foreground transform transition-transform group-hover:rotate-6 shadow-lg shadow-primary/20">
+          <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white transform transition-transform group-hover:rotate-6 shadow-lg shadow-blue-500/20">
               <Zap className="w-6 h-6 fill-current" />
             </div>
-            <span className="text-xl font-heading font-extrabold tracking-tighter">COREWAVEZ.</span>
+            <span className="text-xl font-black tracking-tighter uppercase italic text-gray-900 border-b-2 border-blue-600">
+              Nimesh Business Management
+            </span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-10 text-sm font-medium">
-            {NAV_LINKS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="relative text-muted-foreground hover:text-foreground transition-colors after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
-              >
-                {item.name}
-              </Link>
-            ))}
+            {NAV_LINKS.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`relative font-bold text-xs uppercase tracking-widest transition-all after:absolute after:bottom-[-6px] after:left-0 after:h-[3px] after:bg-blue-600 after:transition-all ${
+                    isActive 
+                      ? "text-blue-600 after:w-full" 
+                      : "text-gray-500 hover:text-gray-900 after:w-0 hover:after:w-full"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
           </nav>
 
-          <div className="flex items-center gap-2 md:gap-4 flex-1 justify-end">
-            <div className="hidden md:flex relative max-w-xs w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search items..."
-                className="pl-10 h-10 bg-secondary/50 border-none rounded-full focus-visible:ring-primary/20"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-secondary">
-              <Heart className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-secondary relative">
-              <ShoppingCart className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-primary-foreground text-[10px] flex items-center justify-center rounded-full font-bold">2</span>
-            </Button>
+          <div className="flex items-center gap-2 md:gap-4 justify-end">
             {!isPending && !session ? (
               <Button asChild variant="ghost" className="rounded-full font-bold hidden lg:flex">
                 <Link href="/signin">Login</Link>

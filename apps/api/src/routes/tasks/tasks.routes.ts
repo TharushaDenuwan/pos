@@ -1,13 +1,13 @@
+import { notFoundSchema } from "@api/lib/constants";
+import { stringIdParamSchema } from "@api/lib/helpers";
 import { createRoute, z } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
-import { createErrorSchema, IdParamsSchema } from "stoker/openapi/schemas";
-
-import { notFoundSchema } from "@api/lib/constants";
+import { createErrorSchema } from "stoker/openapi/schemas";
 import {
-  insertTaskSchema,
-  selectTaskSchema,
-  updateTaskSchema
+    insertTaskSchema,
+    selectTaskSchema,
+    updateTaskSchema
 } from "./tasks.schema";
 
 const tags: string[] = ["Tasks"];
@@ -54,13 +54,13 @@ export const getOne = createRoute({
   method: "get",
   path: "/{id}",
   request: {
-    params: IdParamsSchema
+    params: stringIdParamSchema
   },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(selectTaskSchema, "Requested task"),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, "Task not found"),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(IdParamsSchema),
+      createErrorSchema(stringIdParamSchema),
       "Invalid ID format"
     )
   }
@@ -73,14 +73,14 @@ export const patch = createRoute({
   path: "/{id}",
   method: "patch",
   request: {
-    params: IdParamsSchema,
+    params: stringIdParamSchema,
     body: jsonContentRequired(updateTaskSchema, "The task updates")
   },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(selectTaskSchema, "The updated task"),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, "Task not found"),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(updateTaskSchema).or(createErrorSchema(IdParamsSchema)),
+      createErrorSchema(updateTaskSchema).or(createErrorSchema(stringIdParamSchema)),
       "The validation error(s)"
     )
   }
@@ -93,7 +93,7 @@ export const remove = createRoute({
   path: "/{id}",
   method: "delete",
   request: {
-    params: IdParamsSchema
+    params: stringIdParamSchema
   },
   responses: {
     [HttpStatusCodes.NO_CONTENT]: {
@@ -101,7 +101,7 @@ export const remove = createRoute({
     },
     [HttpStatusCodes.NOT_FOUND]: jsonContent(notFoundSchema, "Task not found"),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(IdParamsSchema),
+      createErrorSchema(stringIdParamSchema),
       "Invalid ID format"
     )
   }
