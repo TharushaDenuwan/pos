@@ -1,23 +1,21 @@
 "use client";
 
 import {
-    IconDashboard,
-    IconPackage,
-    IconSettings,
-    IconShieldLock
+  IconCar,
+  IconClipboardText
 } from "@tabler/icons-react";
 import * as React from "react";
 
 // import { NavMain } from "@/components/dashboard/nav-main";
 import { NavStore } from "@/components/dashboard/nav-store";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@repo/ui/components/sidebar";
 import Link from "next/link";
 import { Logo } from "../logo";
@@ -25,56 +23,18 @@ import { Logo } from "../logo";
 import { NavUser } from "./nav-user";
 
 const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-  ],
   navStore: [
     {
-      title: "Store Management",
-      icon: IconPackage,
+      title: "Car Management",
+      icon: IconCar,
       isActive: true,
-      url: "/admin/arrivals",
-      items: [
-        {
-          title: "New Arrivals",
-          url: "/admin/arrivals",
-        },
-        {
-          title: "Orders",
-          url: "/admin/orders",
-        },
-        {
-          title: "Reviews",
-          url: "/admin/reviews",
-        },
-      ],
+      url: "/admin",
     },
     {
-      title: "Administration",
-      icon: IconShieldLock,
-      isActive: false,
-      url: "/admin/users",
-      items: [
-        {
-          title: "User Management",
-          url: "/admin/users",
-        },
-        {
-          title: "Staff Operations",
-          url: "/admin/staff",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "/admin/settings",
-      icon: IconSettings,
+      title: "Hire Management",
+      icon: IconClipboardText,
+      isActive: true, // This is a default value, highlighting is handled by NavStore
+      url: "/admin/hire-management",
     },
   ],
 };
