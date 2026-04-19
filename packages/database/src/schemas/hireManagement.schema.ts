@@ -16,6 +16,13 @@ export const hireManagement = pgTable("hire_management", {
   costPerDay: integer("cost_per_day").notNull(),
   totalCost: integer("total_cost").notNull(),
 
+  hireType: text("hire_type").notNull().default("daily"), // daily, distance, discuss
+  distance: integer("distance"),
+  pricePerKm: integer("price_per_km"),
+  isWithDriver: text("is_with_driver").default("no"), // yes, no
+  maintenanceCost: integer("maintenance_cost").default(0),
+  fuelCost: integer("fuel_cost").default(0),
+
   status: text("status").default("pending"), // pending, active, returned, cancelled
 
   createdAt: timestamp("created_at").defaultNow(),

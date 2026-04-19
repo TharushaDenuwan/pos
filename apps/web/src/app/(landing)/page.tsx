@@ -10,7 +10,6 @@ export default function MaterialManagementPage() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [statusFilter, setStatusFilter] = useState<"all" | "complete" | "incomplete">("all");
-  const [searchPhone, setSearchPhone] = useState("");
   const [searchDate, setSearchDate] = useState("");
   const [editingRecord, setEditingRecord] = useState<any | null>(null);
   
@@ -19,12 +18,11 @@ export default function MaterialManagementPage() {
 
   const filteredRecords = records.filter(record => {
     const matchesStatus = statusFilter === "all" || record.status === statusFilter;
-    const matchesPhone = !searchPhone || record.phoneNumber.toLowerCase().includes(searchPhone.toLowerCase());
 
     // Check if the YYYY-MM-DD input matches the local date string
     const matchesDate = !searchDate || (record.date && new Date(record.date).toISOString().split('T')[0] === searchDate);
 
-    return matchesStatus && matchesPhone && matchesDate;
+    return matchesStatus && matchesDate;
   });
 
   const fetchRecords = async () => {
@@ -53,7 +51,6 @@ export default function MaterialManagementPage() {
 
     const formData = new FormData(e.currentTarget);
     const data = {
-      phoneNumber: formData.get("phoneNumber"),
       location: formData.get("location"),
       description: formData.get("description"),
       advance: Number(formData.get("advance")) || 0,
@@ -123,7 +120,6 @@ export default function MaterialManagementPage() {
 
     const tableData = reportRecords.map(r => [
       new Date(r.date).toLocaleDateString(),
-      r.phoneNumber,
       r.location || "-",
       r.description || "-",
       `Rs. ${r.advance?.toLocaleString() || "0"}`,
@@ -133,7 +129,7 @@ export default function MaterialManagementPage() {
 
     autoTable(doc, {
       startY: 50,
-      head: [['Date', 'Phone', 'Location', 'Description', 'Advance', 'Total', 'Status']],
+      head: [['Date', 'Location', 'Description', 'Advance', 'Total', 'Status']],
       body: tableData,
       theme: 'grid',
       headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
@@ -152,7 +148,6 @@ export default function MaterialManagementPage() {
     const formData = new FormData(e.currentTarget);
     const updates = {
       date: formData.get("date"),
-      phoneNumber: formData.get("phoneNumber"),
       location: formData.get("location"),
       description: formData.get("description"),
       advance: Number(formData.get("advance")) || 0,
@@ -254,19 +249,6 @@ export default function MaterialManagementPage() {
 
           <div className="h-10 w-px bg-gray-200 self-end mb-1 mx-2 hidden lg:block" />
 
-          <div className="flex flex-col gap-2">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Search Phone</span>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search phone..."
-                value={searchPhone}
-                onChange={(e) => setSearchPhone(e.target.value)}
-                className="pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all w-48"
-              />
-            </div>
-          </div>
 
           <div className="flex flex-col gap-2">
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Filter By Date</span>
@@ -294,10 +276,9 @@ export default function MaterialManagementPage() {
             <table className="w-full text-left border-collapse min-w-[1000px]">
               <thead>
                 <tr className="bg-gray-50/80 text-gray-500 text-xs uppercase tracking-wider font-bold border-b border-gray-200">
-                  <th className="p-4 w-[12%]">Date</th>
-                  <th className="p-4 w-[12%]">Phone Number *</th>
-                  <th className="p-4 w-[12%]">Location</th>
-                  <th className="p-4 w-[20%]">Description</th>
+                  <th className="p-4 w-[15%]">Date</th>
+                  <th className="p-4 w-[15%]">Location</th>
+                  <th className="p-4 w-[25%]">Description</th>
                   <th className="p-4 w-[12%]">Advance (Rs)</th>
                   <th className="p-4 w-[12%]">Total (Rs) *</th>
                   <th className="p-4 w-[12%]">Status</th>
@@ -309,9 +290,6 @@ export default function MaterialManagementPage() {
                 <tr className="bg-blue-50/40">
                   <td className="p-3 align-top italic text-gray-400 text-xs text-center py-5">
                     Auto
-                  </td>
-                  <td className="p-3 align-top">
-                    <input required name="phoneNumber" type="text" placeholder="077..." className="w-full px-3 py-2.5 rounded-lg border border-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white" />
                   </td>
                   <td className="p-3 align-top">
                     <input name="location" type="text" placeholder="Location..." className="w-full px-3 py-2.5 rounded-lg border border-blue-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white" />
@@ -345,11 +323,11 @@ export default function MaterialManagementPage() {
                 {/* DATA ROWS */}
                 {fetching && records.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="p-12 text-center text-gray-400 font-medium tracking-wide">Loading records...</td>
+                    <td colSpan={7} className="p-12 text-center text-gray-400 font-medium tracking-wide">Loading records...</td>
                   </tr>
                 ) : filteredRecords.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="p-12 text-center text-gray-400 font-medium tracking-wide">
+                    <td colSpan={7} className="p-12 text-center text-gray-400 font-medium tracking-wide">
                       {records.length === 0 ? "No records found. Add your first record above." : `No ${statusFilter} records found.`}
                     </td>
                   </tr>
@@ -358,9 +336,6 @@ export default function MaterialManagementPage() {
                     <tr key={record.id} className="hover:bg-gray-50 transition-colors group text-sm">
                       <td className="p-4 text-gray-500 align-middle">
                         {record.date ? new Date(record.date).toLocaleDateString() : "-"}
-                      </td>
-                      <td className="p-4 font-semibold text-gray-900 align-middle">
-                        {record.phoneNumber}
                       </td>
                       <td className="p-4 text-gray-600 align-middle">
                         {record.location || "-"}
@@ -431,10 +406,6 @@ export default function MaterialManagementPage() {
 
             <form onSubmit={handleUpdate} className="p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Phone Number</label>
-                  <input required name="phoneNumber" defaultValue={editingRecord.phoneNumber} type="text" className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30" />
-                </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Location</label>
                   <input name="location" defaultValue={editingRecord.location} type="text" className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30" />

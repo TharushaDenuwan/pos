@@ -7,9 +7,13 @@ export const materialManagement = pgTable("material_management", {
     .default(sql`gen_random_uuid()`),
 
   date: timestamp("date").defaultNow(),
-  phoneNumber: text("phone_number").notNull(),
+  phoneNumber: text("phone_number"),
   description: text("description"),
   location: text("location"),
+  dailyPrice: integer("daily_price").default(0),
+  distancePrice: integer("distance_price").default(0),
+  discuss: text("discuss"),
+  maintenance: integer("maintenance").default(0),
 
   advance: integer("advance").default(0),
   total: integer("total").notNull(),

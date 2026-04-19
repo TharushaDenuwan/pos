@@ -1,0 +1,1 @@
+ALTER TABLE "material_management" ALTER COLUMN "phone_number" DROP NOT NULL;
