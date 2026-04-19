@@ -22,11 +22,11 @@ import {
   ShoppingCart,
   Truck,
   User,
-  X,
-  Zap
+  X
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "./ThemeToggle";
 import { useEffect, useState } from "react";
 
 export function ShopHeader() {
@@ -52,10 +52,7 @@ export function ShopHeader() {
       }`}>
         <div className="content-container flex items-center justify-between gap-8">
           <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white transform transition-transform group-hover:rotate-6 shadow-lg shadow-blue-500/20">
-              <Zap className="w-6 h-6 fill-current" />
-            </div>
-            <span className="text-xl font-black tracking-tighter uppercase italic text-gray-900 border-b-2 border-blue-600">
+            <span className="text-xl font-black tracking-tighter uppercase italic text-gray-900 dark:text-white border-b-2 border-blue-600">
               Nimesh Business Management
             </span>
           </Link>
@@ -70,7 +67,7 @@ export function ShopHeader() {
                   className={`relative font-bold text-xs uppercase tracking-widest transition-all after:absolute after:bottom-[-6px] after:left-0 after:h-[3px] after:bg-blue-600 after:transition-all ${
                     isActive 
                       ? "text-blue-600 after:w-full" 
-                      : "text-gray-500 hover:text-gray-900 after:w-0 hover:after:w-full"
+                      : "text-gray-500 hover:text-gray-900 dark:hover:text-white after:w-0 hover:after:w-full"
                   }`}
                 >
                   {item.name}
@@ -80,8 +77,9 @@ export function ShopHeader() {
           </nav>
 
           <div className="flex items-center gap-2 md:gap-4 justify-end">
+            <ThemeToggle />
             {!isPending && !session ? (
-              <Button asChild variant="ghost" className="rounded-full font-bold hidden lg:flex">
+              <Button asChild variant="ghost" className="rounded-full font-bold hidden lg:flex text-gray-700 dark:text-white hover:bg-black/5 dark:hover:bg-white/5">
                 <Link href="/signin">Login</Link>
               </Button>
             ) : (
@@ -91,27 +89,27 @@ export function ShopHeader() {
                     {session?.user.image ? (
                       <img src={session.user.image} alt={session.user.name} className="w-full h-full object-cover" />
                     ) : (
-                      <User className="w-5 h-5 text-primary" />
+                      <User className="w-5 h-5 text-primary dark:text-white" />
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl shadow-2xl border-none ring-1 ring-black/5">
-                  <DropdownMenuLabel className="font-heading font-bold text-lg p-3">
+                <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl shadow-2xl border-none ring-1 ring-black/5 bg-white dark:bg-gray-900">
+                  <DropdownMenuLabel className="font-heading font-bold text-lg p-3 text-gray-900 dark:text-white">
                     <div className="flex flex-col">
                       <span>{session?.user.name}</span>
                       <span className="text-xs font-medium text-muted-foreground">{session?.user.email}</span>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-black/5" />
-                  <DropdownMenuItem asChild className="rounded-xl h-12 cursor-pointer focus:bg-primary/5">
+                  <DropdownMenuSeparator className="bg-black/5 dark:bg-white/5" />
+                  <DropdownMenuItem asChild className="rounded-xl h-12 cursor-pointer focus:bg-primary/5 text-gray-700 dark:text-gray-200">
                     <Link href="/account" className="w-full">Account Dashboard</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 cursor-pointer focus:bg-primary/5">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 cursor-pointer focus:bg-primary/5 text-gray-700 dark:text-gray-200">
                     <Link href="/orders" className="w-full">Order History</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-black/5" />
+                  <DropdownMenuSeparator className="bg-black/5 dark:bg-white/5" />
                   <DropdownMenuItem
-                    className="rounded-xl h-12 cursor-pointer text-rose-500 focus:text-rose-600 focus:bg-rose-50 font-bold"
+                    className="rounded-xl h-12 cursor-pointer text-rose-500 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-900/10 font-bold"
                     onClick={async () => {
                       await authClient.signOut();
                       window.location.reload();
@@ -125,7 +123,7 @@ export function ShopHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden text-gray-700 dark:text-white"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
