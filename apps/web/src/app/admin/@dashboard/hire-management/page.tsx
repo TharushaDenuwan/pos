@@ -17,6 +17,11 @@ export default function HireManagementPage() {
 
   // PDF Search State
   const [pdfMonth, setPdfMonth] = useState("");
+  const [pdfYear, setPdfYear] = useState("");
+
+  useEffect(() => {
+    setPdfYear(new Date().getFullYear().toString());
+  }, []);
 
   // New Record Form State (for auto-calculation)
   const [newRecord, setNewRecord] = useState({
@@ -50,7 +55,7 @@ export default function HireManagementPage() {
       basePrice = newRecord.costPerDay || 0; // Custom price entered in costPerDay field
     }
 
-    const total = basePrice + (newRecord.maintenanceCost || 0) + (newRecord.fuelCost || 0);
+    const total = basePrice - ((newRecord.maintenanceCost || 0) + (newRecord.fuelCost || 0));
     setNewRecord(prev => ({ ...prev, totalCost: total }));
   }, [
     newRecord.pickupDate,
@@ -80,7 +85,7 @@ export default function HireManagementPage() {
         basePrice = editingRecord.costPerDay || 0;
       }
 
-      const total = basePrice + (Number(editingRecord.maintenanceCost) || 0) + (Number(editingRecord.fuelCost) || 0);
+      const total = basePrice - ((Number(editingRecord.maintenanceCost) || 0) + (Number(editingRecord.fuelCost) || 0));
       if (editingRecord.totalCost !== total) {
         setEditingRecord({ ...editingRecord, totalCost: total });
       }
@@ -277,13 +282,15 @@ export default function HireManagementPage() {
       r.customerName,
       r.phoneNumber,
       r.vehicleType,
-      `Rs. ${r.costPerDay?.toLocaleString()}`,
-      `Rs. ${r.totalCost?.toLocaleString()}`
+      `Rs. ${r.costPerDay?.toLocaleString() || 0}`,
+      `Rs. ${r.maintenanceCost?.toLocaleString() || 0}`,
+      `Rs. ${r.fuelCost?.toLocaleString() || 0}`,
+      `Rs. ${r.totalCost?.toLocaleString() || 0}`
     ]);
 
     autoTable(doc, {
       startY: 50,
-      head: [['Pickup', 'Return', 'Customer', 'Phone', 'Type', 'Cost/Day', 'Total']],
+      head: [['Pickup', 'Return', 'Driver Name', 'Driver Phone', 'V Type', 'Cost/Day', 'DriverSalary', 'Fuel', 'Total']],
       body: tableData,
       theme: 'grid',
       headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
@@ -292,6 +299,75 @@ export default function HireManagementPage() {
     });
 
     doc.save(`Hire_Monthly_Report_${pdfMonth}.pdf`);
+  };
+
+  const handleDownloadYearlyPDF = () => {
+    if (!pdfYear) {
+      alert("Please enter a year for the PDF report.");
+      return;
+    }
+
+    const reportRecords = records.filter(record => {
+      const pDate = new Date(record.pickupDate);
+      return pDate.getFullYear() === parseInt(pdfYear);
+    });
+
+    if (reportRecords.length === 0) {
+      alert(`No records found for the year: ${pdfYear}`);
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(37, 99, 235); // Blue-600
+    doc.text("Nimesh Business Management", 14, 20);
+
+    doc.setFontSize(16);
+    doc.setTextColor(100);
+    doc.text("Hire Yearly Summary Report", 14, 30);
+
+    doc.setFontSize(10);
+    doc.text(`Report Period: Year ${pdfYear}`, 14, 38);
+    doc.text(`Generated On: ${new Date().toLocaleString()}`, 14, 44);
+
+    // Calculate yearly totals
+    const totalRevenue = reportRecords.reduce((sum, r) => sum + (r.totalCost || 0), 0);
+    const totalSalary = reportRecords.reduce((sum, r) => sum + (r.maintenanceCost || 0), 0);
+    const totalFuel = reportRecords.reduce((sum, r) => sum + (r.fuelCost || 0), 0);
+
+    doc.setFontSize(12);
+    doc.setTextColor(37, 99, 235);
+    doc.text(`Yearly Summary:`, 14, 52);
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.text(`Total Hires: ${reportRecords.length}`, 14, 58);
+    doc.text(`Total Driver Salary: Rs. ${totalSalary.toLocaleString()}`, 14, 64);
+    doc.text(`Total Fuel Cost: Rs. ${totalFuel.toLocaleString()}`, 14, 70);
+    doc.text(`Net Total Revenue: Rs. ${totalRevenue.toLocaleString()}`, 14, 76);
+
+    const tableData = reportRecords.map(r => [
+      new Date(r.pickupDate).toLocaleDateString(),
+      r.customerName,
+      r.vehicleType,
+      `Rs. ${r.costPerDay?.toLocaleString() || 0}`,
+      `Rs. ${r.maintenanceCost?.toLocaleString() || 0}`,
+      `Rs. ${r.fuelCost?.toLocaleString() || 0}`,
+      `Rs. ${r.totalCost?.toLocaleString() || 0}`
+    ]);
+
+    autoTable(doc, {
+      startY: 84,
+      head: [['Date', 'Driver/Customer', 'V Type', 'Base Cost', 'DriverSalary', 'Fuel', 'Net Revenue']],
+      body: tableData,
+      theme: 'striped',
+      headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
+      styles: { fontSize: 7 },
+      margin: { top: 80 }
+    });
+
+    doc.save(`Hire_Yearly_Report_${pdfYear}.pdf`);
   };
 
   const handleDelete = async (id: string) => {
@@ -321,19 +397,34 @@ export default function HireManagementPage() {
             </h1>
             <p className="text-gray-500 mt-2 font-medium">Coordinate vehicle rentals, track costs, and manage returns.</p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 p-2 px-4 rounded-2xl items-center gap-4 shadow-inner">
+          <div className="flex items-center gap-6">
+            {/* Monthly Report */}
+            <div className="flex bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 p-2 px-4 rounded-2xl items-center gap-3 shadow-inner">
                <div className="flex flex-col gap-0.5">
-                 <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest pl-1">Monthly Report</span>
-                 <div className="flex items-center gap-3">
-                   <input type="month" value={pdfMonth} onChange={e => setPdfMonth(e.target.value)} className="text-[11px] font-extrabold bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none" />
-                   <button onClick={handleDownloadMonthlyPDF} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all shadow-lg active:scale-95" title="Generate Monthly PDF">
-                     <Download className="w-4 h-4" />
+                 <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest pl-1">Monthly</span>
+                 <div className="flex items-center gap-2">
+                   <input type="month" value={pdfMonth} onChange={e => setPdfMonth(e.target.value)} className="text-[11px] font-extrabold bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-lg px-2 py-1 outline-none" />
+                   <button onClick={handleDownloadMonthlyPDF} className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-lg active:scale-95" title="Monthly PDF">
+                     <Download className="w-3.5 h-3.5" />
                    </button>
                  </div>
                </div>
             </div>
-            <button onClick={fetchRecords} className="p-3 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-white rounded-full transition-colors flex items-center justify-center shrink-0 shadow-sm border border-transparent hover:border-gray-200 dark:hover:border-white/10">
+
+            {/* Yearly Report */}
+            <div className="flex bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 p-2 px-4 rounded-2xl items-center gap-3 shadow-inner">
+               <div className="flex flex-col gap-0.5">
+                 <span className="text-[9px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest pl-1">Yearly</span>
+                 <div className="flex items-center gap-2">
+                   <input type="number" min="2020" max="2100" value={pdfYear} onChange={e => setPdfYear(e.target.value)} className="w-20 text-[11px] font-extrabold bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-lg px-2 py-1 outline-none" />
+                   <button onClick={handleDownloadYearlyPDF} className="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all shadow-lg active:scale-95" title="Yearly PDF">
+                     <Download className="w-3.5 h-3.5" />
+                   </button>
+                 </div>
+               </div>
+            </div>
+
+            <button onClick={fetchRecords} className="p-3 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-white rounded-full transition-colors flex items-center justify-center shrink-0 shadow-sm border border-transparent">
               <RefreshCw className={`w-5 h-5 ${fetching ? 'animate-spin text-blue-500' : ''}`} />
             </button>
           </div>
@@ -371,17 +462,17 @@ export default function HireManagementPage() {
         </div>
 
         {/* Table */}
-        <div className="w-full overflow-x-auto">
+        <div className="w-full">
           <form onSubmit={handleSubmit}>
-            <table className="w-full text-left border-collapse min-w-[1200px]">
+            <table className="w-full text-left border-collapse table-fixed">
               <thead>
                 <tr className="bg-gray-50/80 dark:bg-white/5 text-gray-400 dark:text-gray-500 text-[10px] uppercase tracking-widest font-black border-b border-gray-100 dark:border-white/5">
                   <th className="p-4 w-[10%]">Type</th>
                   <th className="p-4 w-[12%]">Period</th>
-                  <th className="p-4 w-[18%]">Customer Details</th>
+                  <th className="p-4 w-[18%]">Driver Details</th>
                   <th className="p-4 w-[15%]">Vehicle & Options</th>
                   <th className="p-4 w-[15%]">Pricing Info</th>
-                  <th className="p-4 w-[12%] text-right">Maint / Fuel</th>
+                  <th className="p-4 w-[12%] text-right">DRIVER SALARY / FUEL</th>
                   <th className="p-4 w-[10%] text-right">Total (RS)</th>
                   <th className="p-4 w-[8%] text-center">Action</th>
                 </tr>
@@ -447,13 +538,13 @@ export default function HireManagementPage() {
                       </div>
                     ) : (
                       <div className="space-y-1">
-                        <input name="costPerDay" type="number" placeholder={newRecord.hireType === "discuss" ? "Agreed Price" : "Cost per day"} value={newRecord.costPerDay || ""} onChange={(e) => setNewRecord({...newRecord, costPerDay: Number(e.target.value)})} className="w-full px-2 py-2 rounded-lg border border-blue-500 text-[10px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold" />
+                        <input name="costPerDay" type="number" placeholder={newRecord.hireType === "discuss" ? "Agreed Price" : "Cost of trip"} value={newRecord.costPerDay || ""} onChange={(e) => setNewRecord({...newRecord, costPerDay: Number(e.target.value)})} className="w-full px-2 py-2 rounded-lg border border-blue-500 text-[10px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold" />
                         <input name="description" type="text" placeholder="Description..." className="w-full px-2 py-2 rounded-lg border border-blue-200 dark:border-blue-900/30 text-[10px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
                       </div>
                     )}
                   </td>
                   <td className="p-2 align-top space-y-1">
-                    <input name="maintenanceCost" type="number" placeholder="Maintenance" value={newRecord.maintenanceCost || ""} onChange={(e) => setNewRecord({...newRecord, maintenanceCost: Number(e.target.value)})} className="w-full px-2 py-2 rounded-lg border border-amber-200 dark:border-amber-900/30 text-[10px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                    <input name="maintenanceCost" type="number" placeholder="Driver Salary" value={newRecord.maintenanceCost || ""} onChange={(e) => setNewRecord({...newRecord, maintenanceCost: Number(e.target.value)})} className="w-full px-2 py-2 rounded-lg border border-amber-200 dark:border-amber-900/30 text-[10px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
                     <input name="fuelCost" type="number" placeholder="Fuel" value={newRecord.fuelCost || ""} onChange={(e) => setNewRecord({...newRecord, fuelCost: Number(e.target.value)})} className="w-full px-2 py-2 rounded-lg border border-amber-200 dark:border-amber-900/30 text-[10px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
                   </td>
                   <td className="p-2 align-top text-right">
@@ -529,7 +620,7 @@ export default function HireManagementPage() {
                       </td>
                       <td className="p-4 text-gray-600 dark:text-gray-400 align-middle text-right">
                          <div className="flex flex-col items-end">
-                           <span className="text-amber-600 dark:text-amber-400">M: Rs. {record.maintenanceCost?.toLocaleString() || 0}</span>
+                           <span className="text-amber-600 dark:text-amber-400">S: Rs. {record.maintenanceCost?.toLocaleString() || 0}</span>
                            <span className="text-blue-600 dark:text-blue-400">F: Rs. {record.fuelCost?.toLocaleString() || 0}</span>
                          </div>
                       </td>
@@ -628,7 +719,7 @@ export default function HireManagementPage() {
                 )}
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest pl-1">Maintenance Cost</label>
+                  <label className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest pl-1">Driver Salary</label>
                   <input name="maintenanceCost" value={editingRecord.maintenanceCost || ""} type="number" onChange={(e) => setEditingRecord({...editingRecord, maintenanceCost: Number(e.target.value)})} className="w-full px-4 py-3 rounded-xl border-2 border-amber-100 dark:border-amber-900/30 focus:border-amber-500 outline-none font-bold text-sm bg-amber-50/10 dark:bg-white/5" />
                 </div>
                 <div className="space-y-2">

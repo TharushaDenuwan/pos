@@ -25,7 +25,3 @@ export const CATEGORIES = [
   { name: "Electronics", image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=800&auto=format&fit=crop", slug: "electronics" },
 ];
 
-export const NAV_LINKS = [
-  { name: "BUILDING MATERIAL", href: "/" },
-  { name: "Hire Management", href: "/hire-management" },
-];

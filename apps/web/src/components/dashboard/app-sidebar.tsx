@@ -2,7 +2,7 @@
 
 import {
   IconCar,
-  IconClipboardText
+  IconDashboard
 } from "@tabler/icons-react";
 import * as React from "react";
 
@@ -25,14 +25,20 @@ import { NavUser } from "./nav-user";
 const data = {
   navStore: [
     {
-      title: "Car Management",
-      icon: IconCar,
+      title: "DASHBOARD",
+      icon: IconDashboard,
       isActive: true,
-      url: "/admin",
+      url: "/admin/dashboard",
     },
+    // {
+    //   title: "BUILDING MATERIAL MANAGEMENT",
+    //   icon: IconBuilding,
+    //   isActive: true,
+    //   url: "/admin/material-management",
+    // },
     {
       title: "Hire Management",
-      icon: IconClipboardText,
+      icon: IconCar,
       isActive: true, // This is a default value, highlighting is handled by NavStore
       url: "/admin/hire-management",
     },

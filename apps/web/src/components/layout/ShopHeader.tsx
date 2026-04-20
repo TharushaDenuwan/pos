@@ -1,7 +1,6 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { NAV_LINKS } from "@/lib/shop-data";
 import { Button } from "@repo/ui/components/button";
 import {
   DropdownMenu,
@@ -11,23 +10,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
-import { Input } from "@repo/ui/components/input";
 import { Separator } from "@repo/ui/components/separator";
 import {
-  Heart,
   Menu,
   RotateCcw,
-  Search,
   ShieldCheck,
-  ShoppingCart,
   Truck,
   User,
   X
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "./ThemeToggle";
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function ShopHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -52,28 +47,13 @@ export function ShopHeader() {
       }`}>
         <div className="content-container flex items-center justify-between gap-8">
           <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-            <span className="text-xl font-black tracking-tighter uppercase italic text-gray-900 dark:text-white border-b-2 border-blue-600">
-              Nimesh Business Management
+            <span className="text-2xl font-black tracking-tighter uppercase italic text-gray-900 dark:text-white border-b-4 border-blue-600 transition-all group-hover:border-indigo-600">
+              Nimesh Business<span className="text-blue-600 dark:text-blue-400">Management</span>
             </span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-10 text-sm font-medium">
-            {NAV_LINKS.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`relative font-bold text-xs uppercase tracking-widest transition-all after:absolute after:bottom-[-6px] after:left-0 after:h-[3px] after:bg-blue-600 after:transition-all ${
-                    isActive 
-                      ? "text-blue-600 after:w-full" 
-                      : "text-gray-500 hover:text-gray-900 dark:hover:text-white after:w-0 hover:after:w-full"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              );
-            })}
+            {/* Nav links removed as requested */}
           </nav>
 
           <div className="flex items-center gap-2 md:gap-4 justify-end">
@@ -138,9 +118,6 @@ export function ShopHeader() {
           <div className="relative h-full flex flex-col p-8 pt-24 space-y-8">
             <nav className="flex flex-col space-y-6">
               <Link href="/" className="text-3xl font-heading font-bold" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-              {NAV_LINKS.map(link => (
-                <Link key={link.href} href={link.href} className="text-3xl font-heading font-bold" onClick={() => setMobileMenuOpen(false)}>{link.name}</Link>
-              ))}
             </nav>
 
             <Separator />
