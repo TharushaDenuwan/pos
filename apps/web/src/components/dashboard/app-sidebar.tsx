@@ -37,7 +37,7 @@ const data = {
     //   url: "/admin/material-management",
     // },
     {
-      title: "Hire Management",
+      title: "HIRE MANAGEMENT",
       icon: IconCar,
       isActive: true, // This is a default value, highlighting is handled by NavStore
       url: "/admin/hire-management",

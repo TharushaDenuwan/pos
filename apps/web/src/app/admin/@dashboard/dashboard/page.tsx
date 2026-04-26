@@ -17,7 +17,7 @@ type VehicleType = (typeof VEHICLE_TYPES)[number];
 type MaintenanceVehicleType = (typeof MAINTENANCE_TYPES)[number];
 
 const VEHICLE_COLORS: Record<
-  string,
+  MaintenanceVehicleType,
   { bg: string; border: string; text: string; glow: string; badge: string }
 > = {
   KDH: {

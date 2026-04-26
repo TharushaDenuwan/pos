@@ -268,8 +268,8 @@ export default function HireManagementPage() {
     const reportRecords = records.filter((record) => {
       const pDate = new Date(record.pickupDate);
       return (
-        pDate.getFullYear() === parseInt(year) &&
-        pDate.getMonth() + 1 === parseInt(month)
+        pDate.getFullYear() === parseInt(year || "0") &&
+        pDate.getMonth() + 1 === parseInt(month || "0")
       );
     });
 
@@ -291,8 +291,8 @@ export default function HireManagementPage() {
 
     doc.setFontSize(10);
     const monthName = new Date(
-      parseInt(year),
-      parseInt(month) - 1,
+      parseInt(year || "0"),
+      parseInt(month || "0") - 1,
     ).toLocaleString("default", { month: "long" });
     doc.text(`Report Period: ${monthName} ${year}`, 14, 38);
     doc.text(`Generated On: ${new Date().toLocaleString()}`, 14, 44);

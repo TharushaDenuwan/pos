@@ -95,7 +95,10 @@ export default function MaterialManagementPage() {
     }
 
     const [year, month] = pdfMonth.split("-");
-    const reportDate = new Date(parseInt(year), parseInt(month) - 1);
+    const reportDate = new Date(
+      parseInt(year || "0"),
+      parseInt(month || "0") - 1,
+    );
 
     const reportRecords = records.filter(record => {
       const rDate = new Date(record.date);
