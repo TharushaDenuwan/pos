@@ -11,8 +11,8 @@ import {
 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 
-const VEHICLE_TYPES = ["all", "KDH", "CHR", "AQUA", "BIKE"] as const;
-const MAINTENANCE_TYPES = ["KDH", "CHR", "AQUA", "BIKE"] as const;
+const VEHICLE_TYPES = ["all", "KDH", "CHR", "AQUA"] as const;
+const MAINTENANCE_TYPES = ["KDH", "CHR", "AQUA"] as const;
 type VehicleType = (typeof VEHICLE_TYPES)[number];
 type MaintenanceVehicleType = (typeof MAINTENANCE_TYPES)[number];
 
@@ -40,13 +40,6 @@ const VEHICLE_COLORS: Record<
     text: "text-sky-400",
     glow: "shadow-sky-500/20",
     badge: "bg-sky-500",
-  },
-  BIKE: {
-    bg: "bg-teal-500/10",
-    border: "border-teal-500/30",
-    text: "text-teal-400",
-    glow: "shadow-teal-500/20",
-    badge: "bg-teal-500",
   },
 };
 
@@ -109,7 +102,7 @@ export default function AdminDashboardPage() {
     0,
   );
 
-  const vehicleBreakdown = (["KDH", "CHR", "AQUA", "BIKE"] as const).map(
+  const vehicleBreakdown = (["KDH", "CHR", "AQUA"] as const).map(
     (type) => {
       const recs = hireRecordsOnly.filter((r) => r.vehicleType === type);
       const maintRecs = maintenanceRecords.filter(
@@ -145,7 +138,7 @@ export default function AdminDashboardPage() {
     );
 
   const filteredCount = filteredRecords.length;
-  const maintenanceByType = (["KDH", "CHR", "AQUA", "BIKE"] as const).map(
+  const maintenanceByType = (["KDH", "CHR", "AQUA"] as const).map(
     (type) => {
       const recs = filteredMaintenanceRecords.filter(
         (r) => r.vehicleType === type,
@@ -159,7 +152,7 @@ export default function AdminDashboardPage() {
   );
 
   const fmt = (n: number) => `Rs. ${n.toLocaleString()}`;
-  const vehicleLabel = (type: string) => (type === "BIKE" ? "Bike" : type);
+  const vehicleLabel = (type: string) => type;
 
   const handleMaintenanceSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

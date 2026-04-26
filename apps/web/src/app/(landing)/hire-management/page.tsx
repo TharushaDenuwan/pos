@@ -516,7 +516,6 @@ export default function HireManagementPage() {
                       <option value="KDH">KDH</option>
                       <option value="CHR">CHR</option>
                       <option value="AQUA">AQUA</option>
-                      <option value="BIKE">Bike</option>
                     </select>
                     <select
                       name="isWithDriver"
@@ -892,7 +891,6 @@ export default function HireManagementPage() {
                     <option value="KDH">KDH</option>
                     <option value="CHR">CHR</option>
                     <option value="AQUA">AQUA</option>
-                    <option value="BIKE">Bike</option>
                   </select>
                 </div>
                 <div className="md:col-span-2 space-y-2">
