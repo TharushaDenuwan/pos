@@ -7,7 +7,7 @@ import { Providers } from "../modules/layouts/providers";
 
 export const metadata: Metadata = {
   title: "Nimesh Business Management",
-  description: "Business and Finance Management System",
+  description: "Business & Finance Management System",
 };
 
 export default function RootLayout({
