@@ -925,7 +925,7 @@ export default function HireManagementPage() {
       {/* Edit Modal */}
       {editingRecord && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden border border-white/20 dark:border-white/5 animate-in slide-in-from-bottom-8 duration-300">
+          <div className="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden border border-white/20 dark:border-white/5 max-h-[calc(100vh-4rem)] animate-in slide-in-from-bottom-8 duration-300">
             <div className="px-8 py-6 bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-black italic uppercase tracking-tight text-gray-900 dark:text-white">
@@ -945,7 +945,7 @@ export default function HireManagementPage() {
 
             <form
               onSubmit={handleUpdate}
-              className="p-8 space-y-6 text-gray-900 dark:text-white"
+              className="p-8 space-y-6 text-gray-900 dark:text-white overflow-y-auto max-h-[calc(100vh-18rem)]"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
