@@ -66,9 +66,13 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    setMounted(true);
     fetchHires();
   }, []);
+
+  if (!mounted) return null;
 
   const hireRecordsOnly = hireRecords.filter(
     (r) => r.hireType !== "maintenance" && r.hireType !== "oil_change",

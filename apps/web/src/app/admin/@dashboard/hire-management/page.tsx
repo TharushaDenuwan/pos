@@ -126,9 +126,13 @@ export default function HireManagementPage() {
     }
   };
 
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    setMounted(true);
     fetchRecords();
   }, []);
+
+  if (!mounted) return null;
 
   const filteredRecords = records.filter((record) => {
     const matchesType =

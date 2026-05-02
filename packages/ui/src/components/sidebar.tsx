@@ -267,13 +267,14 @@ function SidebarTrigger({
       variant="ghost"
       size="icon"
       className={cn("size-7", className)}
+      suppressHydrationWarning
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <PanelLeftIcon suppressHydrationWarning aria-hidden="true" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

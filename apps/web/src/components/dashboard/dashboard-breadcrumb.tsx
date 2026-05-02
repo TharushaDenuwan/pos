@@ -1,4 +1,5 @@
 "use client";
+import * as React from "react";
 
 import {
   Breadcrumb,
@@ -11,6 +12,10 @@ import { usePathname } from "next/navigation";
 
 export function DashboardBreadcrumb() {
   const pathname = usePathname();
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
 
   const pathList = pathname.slice(1).split("/");
 
