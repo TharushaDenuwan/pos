@@ -2,7 +2,9 @@
 
 import {
   IconCar,
-  IconDashboard
+  IconDashboard,
+  IconSettings,
+  IconDroplet
 } from "@tabler/icons-react";
 import * as React from "react";
 
@@ -41,6 +43,18 @@ const data = {
       icon: IconCar,
       isActive: true, // This is a default value, highlighting is handled by NavStore
       url: "/admin/hire-management",
+    },
+    {
+      title: "VEHICLE MAINTENANCE",
+      icon: IconSettings,
+      isActive: true,
+      url: "/admin/maintenance",
+    },
+    {
+      title: "OIL CHANGE TRACKER",
+      icon: IconDroplet,
+      isActive: true,
+      url: "/admin/oil-change",
     },
   ],
 };

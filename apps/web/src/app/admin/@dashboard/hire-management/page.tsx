@@ -117,7 +117,7 @@ export default function HireManagementPage() {
       const res = await fetch(`${backendUrl}/api/hire-management?limit=100`);
       if (res.ok) {
         const json = await res.json();
-        setRecords(json.data || []);
+        setRecords((json.data || []).filter((r: any) => r.hireType !== "oil_change"));
       }
     } catch (e) {
       console.error("Failed to fetch records", e);
