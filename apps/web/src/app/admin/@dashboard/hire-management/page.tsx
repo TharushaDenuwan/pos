@@ -269,13 +269,20 @@ export default function HireManagementPage() {
 
     const [year, month] = pdfMonth.split("-");
 
-    const reportRecords = records.filter((record) => {
+    const allMonthRecords = records.filter((record) => {
       const pDate = new Date(record.pickupDate);
       return (
         pDate.getFullYear() === parseInt(year || "0") &&
         pDate.getMonth() + 1 === parseInt(month || "0")
       );
     });
+
+    const reportRecords = allMonthRecords.filter(
+      (r) => r.hireType !== "maintenance"
+    );
+    const monthMaintenanceRecords = allMonthRecords.filter(
+      (r) => r.hireType === "maintenance"
+    );
 
     if (reportRecords.length === 0) {
       alert(`No records found for the month: ${pdfMonth}`);
@@ -339,6 +346,26 @@ export default function HireManagementPage() {
       alternateRowStyles: { fillColor: [245, 247, 255] },
     });
 
+    // Monthly net revenue summary
+    const monthTotalRevenue = reportRecords.reduce(
+      (sum, r) => sum + (r.totalCost || 0),
+      0,
+    );
+    const monthMaintenanceCost = monthMaintenanceRecords.reduce(
+      (sum, r) => sum + (r.maintenanceCost || 0),
+      0,
+    );
+    const monthNetRevenue = monthTotalRevenue - monthMaintenanceCost;
+
+    const finalY = (doc as any).lastAutoTable?.finalY || 50;
+    doc.setFontSize(11);
+    doc.setTextColor(37, 99, 235);
+    doc.text(
+      `Net Total Revenue: Rs. ${monthNetRevenue.toLocaleString()}`,
+      14,
+      finalY + 10,
+    );
+
     doc.save(`Hire_Monthly_Report_${pdfMonth}.pdf`);
   };
 
@@ -348,10 +375,18 @@ export default function HireManagementPage() {
       return;
     }
 
-    const reportRecords = records.filter((record) => {
+    const allYearRecords = records.filter((record) => {
       const pDate = new Date(record.pickupDate);
       return pDate.getFullYear() === parseInt(pdfYear);
     });
+
+    // Separate hire records from maintenance records (mirrors dashboard logic)
+    const reportRecords = allYearRecords.filter(
+      (r) => r.hireType !== "maintenance"
+    );
+    const yearMaintenanceRecords = allYearRecords.filter(
+      (r) => r.hireType === "maintenance"
+    );
 
     if (reportRecords.length === 0) {
       alert(`No records found for the year: ${pdfYear}`);
@@ -373,11 +408,16 @@ export default function HireManagementPage() {
     doc.text(`Report Period: Year ${pdfYear}`, 14, 38);
     doc.text(`Generated On: ${new Date().toLocaleString()}`, 14, 44);
 
-    // Calculate yearly totals
-    const totalRevenue = reportRecords.reduce(
+    // Calculate yearly totals — matching dashboard logic exactly
+    const totalHireRevenue = reportRecords.reduce(
       (sum, r) => sum + (r.totalCost || 0),
       0,
     );
+    const totalMaintenanceCost = yearMaintenanceRecords.reduce(
+      (sum, r) => sum + (r.maintenanceCost || 0),
+      0,
+    );
+    const netTotalRevenue = totalHireRevenue - totalMaintenanceCost;
     const totalSalary = reportRecords.reduce(
       (sum, r) => sum + (r.maintenanceCost || 0),
       0,
@@ -399,7 +439,8 @@ export default function HireManagementPage() {
       64,
     );
     doc.text(`Total Fuel Cost: Rs. ${totalFuel.toLocaleString()}`, 14, 70);
-    doc.text(`Net Total Revenue: Rs. ${totalRevenue.toLocaleString()}`, 14, 76);
+    doc.text(`Total Maintenance Cost: Rs. ${totalMaintenanceCost.toLocaleString()}`, 14, 76);
+    doc.text(`Net Total Revenue: Rs. ${netTotalRevenue.toLocaleString()}`, 14, 82);
 
     const tableData = reportRecords.map((r) => [
       new Date(r.pickupDate).toLocaleDateString(),
@@ -412,7 +453,7 @@ export default function HireManagementPage() {
     ]);
 
     autoTable(doc, {
-      startY: 84,
+      startY: 90,
       head: [
         [
           "Date",
@@ -432,7 +473,7 @@ export default function HireManagementPage() {
         fontStyle: "bold",
       },
       styles: { fontSize: 7 },
-      margin: { top: 80 },
+      margin: { top: 86 },
     });
 
     doc.save(`Hire_Yearly_Report_${pdfYear}.pdf`);
