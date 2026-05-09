@@ -1,26 +1,40 @@
 "use client";
 
-import { Calendar, Pencil, Plus, RefreshCw, Search, Trash2, X, Download } from "lucide-react";
-import { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import {
+  Calendar,
+  Download,
+  Pencil,
+  Plus,
+  RefreshCw,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function MaterialManagementPage() {
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<"all" | "complete" | "incomplete">("all");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "complete" | "incomplete"
+  >("all");
   const [searchDate, setSearchDate] = useState("");
   const [editingRecord, setEditingRecord] = useState<any | null>(null);
-  
+
   // PDF Search Month
   const [pdfMonth, setPdfMonth] = useState("");
 
-  const filteredRecords = records.filter(record => {
-    const matchesStatus = statusFilter === "all" || record.status === statusFilter;
+  const filteredRecords = records.filter((record) => {
+    const matchesStatus =
+      statusFilter === "all" || record.status === statusFilter;
 
     // Check if the YYYY-MM-DD input matches the local date string
-    const matchesDate = !searchDate || (record.date && new Date(record.date).toISOString().split('T')[0] === searchDate);
+    const matchesDate =
+      !searchDate ||
+      (record.date &&
+        new Date(record.date).toISOString().split("T")[0] === searchDate);
 
     return matchesStatus && matchesDate;
   });
@@ -28,8 +42,11 @@ export default function MaterialManagementPage() {
   const fetchRecords = async () => {
     setFetching(true);
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-      const res = await fetch(`${backendUrl}/api/matirial-management?limit=100`);
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+      const res = await fetch(
+        `${backendUrl}/api/matirial-management?limit=100`
+      );
       if (res.ok) {
         const json = await res.json();
         setRecords(json.data || []);
@@ -59,7 +76,8 @@ export default function MaterialManagementPage() {
     };
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
       const response = await fetch(`${backendUrl}/api/matirial-management`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,11 +91,15 @@ export default function MaterialManagementPage() {
       } else {
         const errorData = await response.json().catch(() => ({}));
         console.error("Add failed:", response.status, errorData);
-        alert(`Failed to add record: ${response.status}. ${JSON.stringify(errorData)}`);
+        alert(
+          `Failed to add record: ${response.status}. ${JSON.stringify(errorData)}`
+        );
       }
     } catch (error) {
       console.error("Fetch error:", error);
-      alert("Network error. Please ensure the API (Port 8000) is running and CORS is allowed.");
+      alert(
+        "Network error. Please ensure the API (Port 8000) is running and CORS is allowed."
+      );
     } finally {
       setLoading(false);
     }
@@ -89,12 +111,15 @@ export default function MaterialManagementPage() {
       return;
     }
 
-    const [year, month] = pdfMonth.split("-");
+    const [year, month] = pdfMonth.split("-") as [string, string];
     const reportDate = new Date(parseInt(year), parseInt(month) - 1);
-    
-    const reportRecords = records.filter(record => {
+
+    const reportRecords = records.filter((record) => {
       const rDate = new Date(record.date);
-      return rDate.getFullYear() === reportDate.getFullYear() && rDate.getMonth() === reportDate.getMonth();
+      return (
+        rDate.getFullYear() === reportDate.getFullYear() &&
+        rDate.getMonth() === reportDate.getMonth()
+      );
     });
 
     if (reportRecords.length === 0) {
@@ -103,38 +128,42 @@ export default function MaterialManagementPage() {
     }
 
     const doc = new jsPDF();
-    
+
     // Header
     doc.setFontSize(22);
     doc.setTextColor(37, 99, 235);
     doc.text("Nimesh Business Management", 14, 20);
-    
+
     doc.setFontSize(16);
     doc.setTextColor(100);
     doc.text("Building Material Monthly Report", 14, 30);
-    
+
     doc.setFontSize(10);
-    const monthName = reportDate.toLocaleString('default', { month: 'long' });
+    const monthName = reportDate.toLocaleString("default", { month: "long" });
     doc.text(`Report Period: ${monthName} ${year}`, 14, 38);
     doc.text(`Generated On: ${new Date().toLocaleString()}`, 14, 44);
 
-    const tableData = reportRecords.map(r => [
+    const tableData = reportRecords.map((r) => [
       new Date(r.date).toLocaleDateString(),
       r.location || "-",
       r.description || "-",
       `Rs. ${r.advance?.toLocaleString() || "0"}`,
       `Rs. ${r.total?.toLocaleString() || "0"}`,
-      r.status.toUpperCase()
+      r.status.toUpperCase(),
     ]);
 
     autoTable(doc, {
       startY: 50,
-      head: [['Date', 'Location', 'Description', 'Advance', 'Total', 'Status']],
+      head: [["Date", "Location", "Description", "Advance", "Total", "Status"]],
       body: tableData,
-      theme: 'grid',
-      headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
+      theme: "grid",
+      headStyles: {
+        fillColor: [37, 99, 235],
+        textColor: 255,
+        fontStyle: "bold",
+      },
       styles: { fontSize: 7 },
-      alternateRowStyles: { fillColor: [245, 247, 255] }
+      alternateRowStyles: { fillColor: [245, 247, 255] },
     });
 
     doc.save(`Material_Monthly_Report_${pdfMonth}.pdf`);
@@ -156,12 +185,16 @@ export default function MaterialManagementPage() {
     };
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-      const response = await fetch(`${backendUrl}/api/matirial-management/${editingRecord.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updates),
-      });
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+      const response = await fetch(
+        `${backendUrl}/api/matirial-management/${editingRecord.id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates),
+        }
+      );
 
       if (response.ok) {
         setEditingRecord(null);
@@ -181,10 +214,14 @@ export default function MaterialManagementPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this record?")) return;
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-      const response = await fetch(`${backendUrl}/api/matirial-management/${id}`, {
-        method: "DELETE",
-      });
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+      const response = await fetch(
+        `${backendUrl}/api/matirial-management/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (response.ok) {
         await fetchRecords();
         window.location.reload();
@@ -203,33 +240,50 @@ export default function MaterialManagementPage() {
             <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white uppercase">
               BUILDING MATERIAL MANAGEMENT
             </h1>
-            <p className="text-gray-500 mt-1 font-medium">Quickly add and track material orders here.</p>
+            <p className="text-gray-500 mt-1 font-medium">
+              Quickly add and track material orders here.
+            </p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 p-2 px-4 rounded-2xl items-center gap-4 shadow-inner">
-               <div className="flex flex-col gap-0.5">
-                 <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest pl-1">Monthly Report System</span>
-                 <div className="flex items-center gap-3">
-                   <input type="month" value={pdfMonth} onChange={e => setPdfMonth(e.target.value)} className="text-[11px] font-extrabold bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none" />
-                   <button onClick={handleDownloadMonthlyPDF} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-95" title="Generate Monthly PDF">
-                     <Download className="w-4 h-4" />
-                   </button>
-                 </div>
-               </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest pl-1">
+                  Monthly Report System
+                </span>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="month"
+                    value={pdfMonth}
+                    onChange={(e) => setPdfMonth(e.target.value)}
+                    className="text-[11px] font-extrabold bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                  <button
+                    onClick={handleDownloadMonthlyPDF}
+                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
+                    title="Generate Monthly PDF"
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             </div>
             <button
               onClick={fetchRecords}
               className="p-3 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-white rounded-full transition-colors flex items-center justify-center shrink-0"
               title="Refresh Data"
             >
-              <RefreshCw className={`w-5 h-5 ${fetching ? 'animate-spin text-blue-500' : ''}`} />
+              <RefreshCw
+                className={`w-5 h-5 ${fetching ? "animate-spin text-blue-500" : ""}`}
+              />
             </button>
           </div>
         </div>
         {/* Filtering & Search Section */}
         <div className="px-8 py-6 bg-gray-50/50 dark:bg-gray-800/20 border-b border-gray-100 dark:border-white/5 flex flex-wrap items-center gap-6">
           <div className="flex flex-col gap-2">
-            <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Status Filter</span>
+            <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+              Status Filter
+            </span>
             <div className="flex bg-gray-200/50 dark:bg-white/5 p-1 rounded-xl w-fit">
               {(["all", "complete", "incomplete"] as const).map((s) => (
                 <button
@@ -250,7 +304,9 @@ export default function MaterialManagementPage() {
           <div className="h-10 w-px bg-gray-200 dark:bg-white/10 self-end mb-1 mx-2 hidden lg:block" />
 
           <div className="flex flex-col gap-2">
-            <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Filter By Date</span>
+            <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+              Filter By Date
+            </span>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -264,7 +320,11 @@ export default function MaterialManagementPage() {
 
           <div className="ml-auto flex items-end h-full pt-6">
             <div className="text-[11px] font-bold text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800 px-4 py-2 rounded-full border border-gray-100 dark:border-white/5 shadow-sm">
-              RESULTS: <span className="text-blue-600 dark:text-blue-400 font-black ml-1">{filteredRecords.length}</span> <span className="mx-1 opacity-20">/</span> {records.length}
+              RESULTS:{" "}
+              <span className="text-blue-600 dark:text-blue-400 font-black ml-1">
+                {filteredRecords.length}
+              </span>{" "}
+              <span className="mx-1 opacity-20">/</span> {records.length}
             </div>
           </div>
         </div>
@@ -291,19 +351,43 @@ export default function MaterialManagementPage() {
                     Auto
                   </td>
                   <td className="p-3 align-top">
-                    <input name="location" type="text" placeholder="Location..." className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                    <input
+                      name="location"
+                      type="text"
+                      placeholder="Location..."
+                      className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    />
                   </td>
                   <td className="p-3 align-top">
-                    <input name="description" type="text" placeholder="Details..." className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                    <input
+                      name="description"
+                      type="text"
+                      placeholder="Details..."
+                      className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    />
                   </td>
                   <td className="p-3 align-top">
-                    <input name="advance" type="number" placeholder="0" className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                    <input
+                      name="advance"
+                      type="number"
+                      placeholder="0"
+                      className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    />
                   </td>
                   <td className="p-3 align-top">
-                    <input required name="total" type="number" placeholder="0" className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+                    <input
+                      required
+                      name="total"
+                      type="number"
+                      placeholder="0"
+                      className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    />
                   </td>
                   <td className="p-3 align-top">
-                    <select name="status" className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-medium">
+                    <select
+                      name="status"
+                      className="w-full px-3 py-2.5 rounded-lg border border-blue-200 dark:border-blue-900/30 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-medium"
+                    >
                       <option value="incomplete">Incomplete</option>
                       <option value="complete">Complete</option>
                     </select>
@@ -314,45 +398,73 @@ export default function MaterialManagementPage() {
                       disabled={loading}
                       className="inline-flex w-full items-center justify-center px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-sm"
                     >
-                      {loading ? "..." : <><Plus className="w-4 h-4 mr-1" /> Add</>}
+                      {loading ? (
+                        "..."
+                      ) : (
+                        <>
+                          <Plus className="w-4 h-4 mr-1" /> Add
+                        </>
+                      )}
                     </button>
                   </td>
                 </tr>
 
-                  {fetching && records.length === 0 ? (
+                {fetching && records.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-gray-400 dark:text-gray-600 font-medium tracking-wide">Loading records...</td>
+                    <td
+                      colSpan={7}
+                      className="p-12 text-center text-gray-400 dark:text-gray-600 font-medium tracking-wide"
+                    >
+                      Loading records...
+                    </td>
                   </tr>
                 ) : filteredRecords.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-gray-400 dark:text-gray-600 font-medium tracking-wide">
-                      {records.length === 0 ? "No records found. Add your first record above." : `No ${statusFilter} records found.`}
+                    <td
+                      colSpan={7}
+                      className="p-12 text-center text-gray-400 dark:text-gray-600 font-medium tracking-wide"
+                    >
+                      {records.length === 0
+                        ? "No records found. Add your first record above."
+                        : `No ${statusFilter} records found.`}
                     </td>
                   </tr>
                 ) : (
                   filteredRecords.map((record) => (
-                    <tr key={record.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group text-sm">
+                    <tr
+                      key={record.id}
+                      className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group text-sm"
+                    >
                       <td className="p-4 text-gray-500 dark:text-gray-400 align-middle">
-                        {record.date ? new Date(record.date).toLocaleDateString() : "-"}
+                        {record.date
+                          ? new Date(record.date).toLocaleDateString()
+                          : "-"}
                       </td>
                       <td className="p-4 text-gray-600 dark:text-gray-300 align-middle">
                         {record.location || "-"}
                       </td>
-                      <td className="p-4 text-gray-600 dark:text-gray-300 max-w-[200px] truncate align-middle" title={record.description}>
+                      <td
+                        className="p-4 text-gray-600 dark:text-gray-300 max-w-[200px] truncate align-middle"
+                        title={record.description}
+                      >
                         {record.description || "-"}
                       </td>
                       <td className="p-4 text-gray-800 dark:text-gray-200 font-medium align-middle">
-                        {record.advance ? `Rs. ${record.advance.toLocaleString()}` : "-"}
+                        {record.advance
+                          ? `Rs. ${record.advance.toLocaleString()}`
+                          : "-"}
                       </td>
                       <td className="p-4 text-gray-900 dark:text-white font-bold align-middle">
                         Rs. {record.total?.toLocaleString() || "0"}
                       </td>
                       <td className="p-4 align-middle">
-                        <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                          record.status === 'complete'
-                            ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800'
-                            : 'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
-                        }`}>
+                        <span
+                          className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                            record.status === "complete"
+                              ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800"
+                              : "bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                          }`}
+                        >
                           {record.status}
                         </span>
                       </td>
@@ -391,8 +503,12 @@ export default function MaterialManagementPage() {
           <div className="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden border border-white/20 dark:border-white/5 animate-in slide-in-from-bottom-8 duration-300">
             <div className="px-8 py-6 bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black italic uppercase tracking-tight text-gray-900 dark:text-white">Edit Record</h2>
-                <p className="text-xs font-bold text-gray-400 dark:text-gray-500 mt-1 uppercase tracking-widest">Update material management details</p>
+                <h2 className="text-2xl font-black italic uppercase tracking-tight text-gray-900 dark:text-white">
+                  Edit Record
+                </h2>
+                <p className="text-xs font-bold text-gray-400 dark:text-gray-500 mt-1 uppercase tracking-widest">
+                  Update material management details
+                </p>
               </div>
               <button
                 onClick={() => setEditingRecord(null)}
@@ -402,31 +518,82 @@ export default function MaterialManagementPage() {
               </button>
             </div>
 
-            <form onSubmit={handleUpdate} className="p-8 space-y-6 text-gray-900 dark:text-white">
+            <form
+              onSubmit={handleUpdate}
+              className="p-8 space-y-6 text-gray-900 dark:text-white"
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Location</label>
-                  <input name="location" defaultValue={editingRecord.location} type="text" className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5" />
+                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+                    Location
+                  </label>
+                  <input
+                    name="location"
+                    defaultValue={editingRecord.location}
+                    type="text"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5"
+                  />
                 </div>
                 <div className="md:col-span-2 space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Description</label>
-                  <textarea name="description" defaultValue={editingRecord.description} rows={3} className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5 resize-none" />
+                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    defaultValue={editingRecord.description}
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5 resize-none"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Advance Amount</label>
-                  <input name="advance" defaultValue={editingRecord.advance} type="number" className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5" />
+                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+                    Advance Amount
+                  </label>
+                  <input
+                    name="advance"
+                    defaultValue={editingRecord.advance}
+                    type="number"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Total Amount</label>
-                  <input required name="total" defaultValue={editingRecord.total} type="number" className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5" />
+                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+                    Total Amount
+                  </label>
+                  <input
+                    required
+                    name="total"
+                    defaultValue={editingRecord.total}
+                    type="number"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Record Date</label>
-                  <input name="date" defaultValue={editingRecord.date ? new Date(editingRecord.date).toISOString().split('T')[0] : ""} type="date" className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5" />
+                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+                    Record Date
+                  </label>
+                  <input
+                    name="date"
+                    defaultValue={
+                      editingRecord.date
+                        ? new Date(editingRecord.date)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
+                    type="date"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Status</label>
-                  <select name="status" defaultValue={editingRecord.status} className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5 appearance-none">
+                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+                    Status
+                  </label>
+                  <select
+                    name="status"
+                    defaultValue={editingRecord.status}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-white/10 focus:border-blue-500 outline-none font-bold text-sm bg-gray-50/30 dark:bg-white/5 appearance-none"
+                  >
                     <option value="incomplete">INCOMPLETE</option>
                     <option value="complete">COMPLETE</option>
                   </select>

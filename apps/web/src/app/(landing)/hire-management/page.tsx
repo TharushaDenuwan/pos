@@ -13,7 +13,7 @@ export default function HireManagementPage() {
 
   // Filters
   const [typeFilter, setTypeFilter] = useState<"all" | "KDH" | "CHR" | "AQUA">(
-    "all",
+    "all"
   );
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -234,7 +234,7 @@ export default function HireManagementPage() {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updates),
-        },
+        }
       );
 
       if (response.ok) {
@@ -258,7 +258,7 @@ export default function HireManagementPage() {
       return;
     }
 
-    const [year, month] = pdfMonth.split("-");
+    const [year, month] = pdfMonth.split("-") as [string, string];
 
     const reportRecords = records.filter((record) => {
       const pDate = new Date(record.pickupDate);
@@ -287,7 +287,7 @@ export default function HireManagementPage() {
     doc.setFontSize(10);
     const monthName = new Date(
       parseInt(year),
-      parseInt(month) - 1,
+      parseInt(month) - 1
     ).toLocaleString("default", { month: "long" });
     doc.text(`Report Period: ${monthName} ${year}`, 14, 38);
     doc.text(`Generated On: ${new Date().toLocaleString()}`, 14, 44);
@@ -442,7 +442,9 @@ export default function HireManagementPage() {
                   <th className="p-4 w-[18%]">Customer Details</th>
                   <th className="p-4 w-[15%]">Vehicle & Options</th>
                   <th className="p-4 w-[15%]">Pricing Info</th>
-                  <th className="p-4 w-[12%] text-right">DRIVER SALARY / FUEL</th>
+                  <th className="p-4 w-[12%] text-right">
+                    DRIVER SALARY / FUEL
+                  </th>
                   <th className="p-4 w-[10%] text-right">Total (RS)</th>
                   <th className="p-4 w-[8%] text-center">Action</th>
                 </tr>

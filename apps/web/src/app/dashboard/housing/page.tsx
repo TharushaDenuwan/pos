@@ -2,14 +2,15 @@ import { HousingsList } from "@/features/housing/components/housings-list";
 import { NewHousing } from "@/features/housing/components/new-housing";
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
-  };
+  }>;
 }
 
-export default function HousingPage({ searchParams }: PageProps) {
-  const { page = "1", search = "" } = searchParams;
+export default async function HousingPage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const { page = "1", search = "" } = resolvedSearchParams;
 
   return (
     <div className="container mx-auto py-8 px-3 max-w-5xl">

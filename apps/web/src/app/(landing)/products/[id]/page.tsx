@@ -8,8 +8,12 @@ import { IconStarFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   const { data: product } = await getProductById(id);
 
   if (!product) {
@@ -22,7 +26,10 @@ export default async function ProductPage({ params }: { params: { id: string } }
     <div className="bg-white min-h-screen">
       <div className="content-container py-20 lg:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
-          <ProductImageGallery images={product.images || []} mainImage={product.image} />
+          <ProductImageGallery
+            images={product.images || []}
+            mainImage={product.image}
+          />
           <ProductInfo product={product} />
         </div>
 

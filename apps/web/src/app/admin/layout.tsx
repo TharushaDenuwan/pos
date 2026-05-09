@@ -4,15 +4,17 @@ import { headers } from "next/headers";
 
 export default async function AccountPageLayout({
   dashboard,
-  auth
+  auth,
+  children,
 }: {
-  dashboard?: React.ReactNode;
-  auth?: React.ReactNode;
+  dashboard: React.ReactNode;
+  auth: React.ReactNode;
+  children: React.ReactNode;
 }) {
   const session = await authClient.getSession({
     fetchOptions: {
-      headers: await headers()
-    }
+      headers: await headers(),
+    },
   });
 
   return (

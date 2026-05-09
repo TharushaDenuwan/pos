@@ -3,14 +3,15 @@ import { NewWorker } from "@/features/worker/components/new-worker";
 import { WorkerTable } from "@/features/worker/components/worker-table";
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
-  };
+  }>;
 }
 
 export default async function WorkerPage({ searchParams }: PageProps) {
-  const { page = "1", search = "" } = searchParams;
+  const resolvedSearchParams = await searchParams;
+  const { page = "1", search = "" } = resolvedSearchParams;
   // Fetch workers and pagination meta
   const response = await getAllWorker({ page, search });
   const workers = response.data.map((worker: any) => ({

@@ -135,14 +135,15 @@ function JobsTable({ page, search, jobs, setJobs, loading }: any) {
 }
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
-  };
+  }>;
 }
 
-export default function JobPage({ searchParams }: PageProps) {
-  const { page = "1", search = "" } = searchParams;
+export default async function JobPage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const { page = "1", search = "" } = resolvedSearchParams;
   const [view, setView] = useState<"card" | "table" | "map">("card");
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

@@ -11,15 +11,15 @@ import orders from "./orders/orders.index";
 import products from "./products/products.index";
 import reviews from "./reviews/reviews.index";
 import roles from "./roles/roles.index";
-import staffProfiles from "./staffProfiles/staffProfiles.index";
+// import staffProfiles from "./staffProfiles/staffProfiles.index";
+import hireManagement from "./hireManagement/hireManagement.index";
+import matirialManagement from "./matirialManagement/matirialManagement.index";
 import task from "./task/task.index";
 import tasks from "./tasks/tasks.index";
 import users from "./users/users.index";
 import worker from "./worker/worker.index";
 import worker_categories from "./worker_categories/worker_categories.index";
 import worker_skills from "./worker_skills/worker_skills.index";
-import matirialManagement from "./matirialManagement/matirialManagement.index";
-import hireManagement from "./hireManagement/hireManagement.index";
 export function registerRoutes(app: AppOpenAPI) {
   return (
     app
@@ -29,7 +29,7 @@ export function registerRoutes(app: AppOpenAPI) {
       .route("/roles", roles)
       .route("/products", products)
       .route("/orders", orders)
-      .route("/staff-profiles", staffProfiles)
+      // .route("/staff-profiles", staffProfiles)
       .route("/reviews", reviews)
       .route("/new-arrivals", newArrivals)
       .route("/order-items", orderItems)
@@ -42,7 +42,6 @@ export function registerRoutes(app: AppOpenAPI) {
       .route("/hire-management", hireManagement)
   );
 }
-
 
 // stand alone router type used for api client
 export const router = registerRoutes(createRouter().basePath(BASE_PATH));

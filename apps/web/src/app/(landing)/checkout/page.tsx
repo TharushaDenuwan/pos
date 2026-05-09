@@ -2,18 +2,21 @@
 
 import { useCartStore } from "@/features/cart/store/useCartStore";
 import { createOrder } from "@/features/orders/actions/create.action";
-import { CheckoutFormValues, checkoutSchema } from "@/features/orders/schemas/checkout";
+import {
+  CheckoutFormValues,
+  checkoutSchema,
+} from "@/features/orders/schemas/checkout";
 import { formatPrice } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@repo/ui/components/button";
 import { Card } from "@repo/ui/components/card";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@repo/ui/components/form";
 import { Input } from "@repo/ui/components/input";
 import { Textarea } from "@repo/ui/components/textarea";
@@ -79,7 +82,7 @@ export default function CheckoutPage() {
   };
 
   if (items.length === 0) {
-     return (
+    return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-8 content-container">
         <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center text-muted-foreground/30 animate-pulse">
           <ShoppingBag className="w-12 h-12" />
@@ -88,7 +91,11 @@ export default function CheckoutPage() {
           <h1 className="text-4xl font-heading font-black tracking-tighter italic uppercase text-primary">
             Cart Empty
           </h1>
-          <Button asChild size="lg" className="h-16 px-10 rounded-2xl text-lg font-bold group shadow-2xl shadow-primary/20">
+          <Button
+            asChild
+            size="lg"
+            className="h-16 px-10 rounded-2xl text-lg font-bold group shadow-2xl shadow-primary/20"
+          >
             <Link href="/">
               Go Shopping
               <ArrowRight className="ml-2 w-6 h-6 transition-transform group-hover:translate-x-1" />
@@ -116,16 +123,25 @@ export default function CheckoutPage() {
 
             <Card className="p-8 md:p-12 rounded-[32px] border-2 border-black/5 hover:border-black/10 transition-all">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-8"
+                >
                   <div className="space-y-6">
                     <FormField
                       control={form.control}
                       name="customerName"
-                      render={({ field }) => (
+                      render={({ field }: { field: any }) => (
                         <FormItem>
-                          <FormLabel className="font-bold uppercase tracking-wider text-xs text-muted-foreground">Full Name</FormLabel>
+                          <FormLabel className="font-bold uppercase tracking-wider text-xs text-muted-foreground">
+                            Full Name
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} className="h-14 rounded-xl text-lg bg-secondary/30 border-transparent focus:bg-white focus:border-primary transition-all" />
+                            <Input
+                              placeholder="John Doe"
+                              {...field}
+                              className="h-14 rounded-xl text-lg bg-secondary/30 border-transparent focus:bg-white focus:border-primary transition-all"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -136,11 +152,18 @@ export default function CheckoutPage() {
                       <FormField
                         control={form.control}
                         name="customerEmail"
-                        render={({ field }) => (
+                        render={({ field }: { field: any }) => (
                           <FormItem>
-                            <FormLabel className="font-bold uppercase tracking-wider text-xs text-muted-foreground">Email</FormLabel>
+                            <FormLabel className="font-bold uppercase tracking-wider text-xs text-muted-foreground">
+                              Email
+                            </FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="john@example.com" {...field} className="h-14 rounded-xl text-lg bg-secondary/30 border-transparent focus:bg-white focus:border-primary transition-all" />
+                              <Input
+                                type="email"
+                                placeholder="john@example.com"
+                                {...field}
+                                className="h-14 rounded-xl text-lg bg-secondary/30 border-transparent focus:bg-white focus:border-primary transition-all"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -149,11 +172,18 @@ export default function CheckoutPage() {
                       <FormField
                         control={form.control}
                         name="customerPhone"
-                        render={({ field }) => (
+                        render={({ field }: { field: any }) => (
                           <FormItem>
-                            <FormLabel className="font-bold uppercase tracking-wider text-xs text-muted-foreground">Phone</FormLabel>
+                            <FormLabel className="font-bold uppercase tracking-wider text-xs text-muted-foreground">
+                              Phone
+                            </FormLabel>
                             <FormControl>
-                              <Input type="tel" placeholder="+1 (555) 000-0000" {...field} className="h-14 rounded-xl text-lg bg-secondary/30 border-transparent focus:bg-white focus:border-primary transition-all" />
+                              <Input
+                                type="tel"
+                                placeholder="+1 (555) 000-0000"
+                                {...field}
+                                className="h-14 rounded-xl text-lg bg-secondary/30 border-transparent focus:bg-white focus:border-primary transition-all"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -164,11 +194,17 @@ export default function CheckoutPage() {
                     <FormField
                       control={form.control}
                       name="customerAddress"
-                      render={({ field }) => (
+                      render={({ field }: { field: any }) => (
                         <FormItem>
-                          <FormLabel className="font-bold uppercase tracking-wider text-xs text-muted-foreground">Shipping Address</FormLabel>
+                          <FormLabel className="font-bold uppercase tracking-wider text-xs text-muted-foreground">
+                            Shipping Address
+                          </FormLabel>
                           <FormControl>
-                            <Textarea placeholder="123 Fashion St, New York, NY" {...field} className="min-h-[120px] rounded-xl text-lg p-4 bg-secondary/30 border-transparent focus:bg-white focus:border-primary transition-all resize-none" />
+                            <Textarea
+                              placeholder="123 Fashion St, New York, NY"
+                              {...field}
+                              className="min-h-[120px] rounded-xl text-lg p-4 bg-secondary/30 border-transparent focus:bg-white focus:border-primary transition-all resize-none"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -177,13 +213,15 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Payment Method - Only COD for now */}
-                   <div className="pt-8 border-t border-black/5">
-                      <h3 className="font-bold text-lg mb-4 italic">Payment Method</h3>
-                      <div className="p-6 rounded-xl border-2 border-primary bg-primary/5 text-primary font-bold flex items-center gap-4 cursor-pointer hover:bg-primary/10 transition-colors">
-                        <div className="w-6 h-6 rounded-full border-[6px] border-primary" />
-                        Cash on Delivery (COD)
-                      </div>
-                   </div>
+                  <div className="pt-8 border-t border-black/5">
+                    <h3 className="font-bold text-lg mb-4 italic">
+                      Payment Method
+                    </h3>
+                    <div className="p-6 rounded-xl border-2 border-primary bg-primary/5 text-primary font-bold flex items-center gap-4 cursor-pointer hover:bg-primary/10 transition-colors">
+                      <div className="w-6 h-6 rounded-full border-[6px] border-primary" />
+                      Cash on Delivery (COD)
+                    </div>
+                  </div>
 
                   <Button
                     type="submit"
@@ -192,7 +230,9 @@ export default function CheckoutPage() {
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "PROCESSING..." : "PLACE ORDER"}
-                    {!isSubmitting && <ArrowRight className="ml-3 w-6 h-6 transition-transform group-hover:translate-x-1" />}
+                    {!isSubmitting && (
+                      <ArrowRight className="ml-3 w-6 h-6 transition-transform group-hover:translate-x-1" />
+                    )}
                   </Button>
                 </form>
               </Form>
@@ -201,46 +241,64 @@ export default function CheckoutPage() {
 
           {/* Order Summary */}
           <div className="w-full lg:w-[400px] flex-shrink-0 sticky top-32">
-             <Card className="p-8 rounded-[32px] bg-secondary/30 border-2 border-transparent space-y-8">
-                <div className="flex items-center justify-between">
-                    <h3 className="font-heading font-black text-2xl italic uppercase">In Your Bag</h3>
-                    <span className="font-bold text-muted-foreground bg-white px-3 py-1 rounded-full text-xs box-shadow-sm">{items.length} Items</span>
-                </div>
+            <Card className="p-8 rounded-[32px] bg-secondary/30 border-2 border-transparent space-y-8">
+              <div className="flex items-center justify-between">
+                <h3 className="font-heading font-black text-2xl italic uppercase">
+                  In Your Bag
+                </h3>
+                <span className="font-bold text-muted-foreground bg-white px-3 py-1 rounded-full text-xs box-shadow-sm">
+                  {items.length} Items
+                </span>
+              </div>
 
-                <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                  {items.map((item) => (
-                    <div key={item.id} className="flex gap-4 items-center group">
-                       <div className="w-20 h-20 rounded-2xl bg-white flex-shrink-0 overflow-hidden border border-black/5 group-hover:scale-95 transition-transform">
-                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                       </div>
-                       <div className="flex-1 min-w-0">
-                         <p className="font-bold truncate text-sm mb-1">{item.name}</p>
-                         <p className="text-xs text-muted-foreground font-medium">Qty: {item.quantity}</p>
-                       </div>
-                       <div className="text-right">
-                         <p className="font-bold text-sm">
-                           {formatPrice((item.price - (item.discount || 0)) * item.quantity)}
-                         </p>
-                       </div>
+              <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                {items.map((item) => (
+                  <div key={item.id} className="flex gap-4 items-center group">
+                    <div className="w-20 h-20 rounded-2xl bg-white flex-shrink-0 overflow-hidden border border-black/5 group-hover:scale-95 transition-transform">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  ))}
-                </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold truncate text-sm mb-1">
+                        {item.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground font-medium">
+                        Qty: {item.quantity}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-sm">
+                        {formatPrice(
+                          (item.price - (item.discount || 0)) * item.quantity
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-                <div className="pt-8 border-t border-black/5 space-y-3">
-                   <div className="flex justify-between font-medium text-muted-foreground">
-                      <span>Subtotal</span>
-                      <span className="font-bold text-foreground">{formatPrice(totalPrice())}</span>
-                   </div>
-                   <div className="flex justify-between font-medium text-muted-foreground">
-                      <span>Shipping</span>
-                      <span className="text-green-600 font-bold uppercase tracking-wider text-xs bg-green-100 px-2 py-1 rounded-md">Free</span>
-                   </div>
-                   <div className="flex justify-between text-3xl font-black italic text-primary pt-6 border-t border-black/5">
-                      <span>Total</span>
-                      <span>{formatPrice(totalPrice())}</span>
-                   </div>
+              <div className="pt-8 border-t border-black/5 space-y-3">
+                <div className="flex justify-between font-medium text-muted-foreground">
+                  <span>Subtotal</span>
+                  <span className="font-bold text-foreground">
+                    {formatPrice(totalPrice())}
+                  </span>
                 </div>
-             </Card>
+                <div className="flex justify-between font-medium text-muted-foreground">
+                  <span>Shipping</span>
+                  <span className="text-green-600 font-bold uppercase tracking-wider text-xs bg-green-100 px-2 py-1 rounded-md">
+                    Free
+                  </span>
+                </div>
+                <div className="flex justify-between text-3xl font-black italic text-primary pt-6 border-t border-black/5">
+                  <span>Total</span>
+                  <span>{formatPrice(totalPrice())}</span>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </div>

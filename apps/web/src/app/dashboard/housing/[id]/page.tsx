@@ -24,15 +24,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export default async function SingleHousingPage({ params }: Props) {
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
   const rpcClient = await client();
 
   try {
     const housingRes = await rpcClient.api.housing[":id"].$get({
-      param: { id: params.id },
+      param: { id: resolvedParams.id },
     });
 
     if (housingRes.status !== 200) {
