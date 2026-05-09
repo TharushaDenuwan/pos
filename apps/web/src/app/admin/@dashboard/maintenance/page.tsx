@@ -1,11 +1,14 @@
 "use client";
 
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   Activity,
   Pencil,
   Trash2,
   X,
   RefreshCw,
+  Download,
 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 
@@ -166,6 +169,66 @@ export default function MaintenancePage() {
     }
   };
 
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(245, 158, 11); // Amber-500
+    doc.text("Nimesh Business Management", 14, 20);
+
+    doc.setFontSize(16);
+    doc.setTextColor(100);
+    doc.text("Vehicle Maintenance Report", 14, 30);
+
+    doc.setFontSize(10);
+    doc.text(`Generated On: ${new Date().toLocaleString()}`, 14, 38);
+
+    const tableData = maintenanceRecords.map((r) => [
+      new Date(r.pickupDate).toLocaleDateString(),
+      r.vehicleType,
+      r.description || "N/A",
+      `Rs. ${r.maintenanceCost?.toLocaleString() || 0}`,
+    ]);
+
+    autoTable(doc, {
+      startY: 45,
+      head: [
+        [
+          "Date",
+          "Vehicle Type",
+          "Description",
+          "Cost",
+        ],
+      ],
+      body: tableData,
+      theme: "grid",
+      headStyles: {
+        fillColor: [245, 158, 11],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+      styles: { fontSize: 9 },
+      alternateRowStyles: { fillColor: [255, 251, 235] },
+    });
+
+    const total = maintenanceRecords.reduce(
+      (sum, r) => sum + (r.maintenanceCost || 0),
+      0,
+    );
+
+    const finalY = (doc as any).lastAutoTable?.finalY || 45;
+    doc.setFontSize(12);
+    doc.setTextColor(245, 158, 11);
+    doc.text(
+      `Total Maintenance Cost: Rs. ${total.toLocaleString()}`,
+      14,
+      finalY + 10,
+    );
+
+    doc.save("Maintenance_Report.pdf");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0f] p-6 lg:p-10 space-y-8">
       <div className="flex items-center justify-between">
@@ -180,15 +243,24 @@ export default function MaintenancePage() {
             Manage extra maintenance records.
           </p>
         </div>
-        <button
-          onClick={fetchHires}
-          className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 shadow-sm transition-all active:scale-95"
-        >
-          <RefreshCw
-            className={`w-4 h-4 ${refreshing ? "animate-spin text-blue-500" : ""}`}
-          />
-          Refresh
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleDownloadPDF}
+            className="flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 border border-amber-600 rounded-xl text-xs font-bold text-white shadow-sm transition-all active:scale-95"
+          >
+            <Download className="w-4 h-4" />
+            Download PDF
+          </button>
+          <button
+            onClick={fetchHires}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 shadow-sm transition-all active:scale-95"
+          >
+            <RefreshCw
+              className={`w-4 h-4 ${refreshing ? "animate-spin text-blue-500" : ""}`}
+            />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* ── EXTRA MAINTENANCE BREAKDOWN ── */}

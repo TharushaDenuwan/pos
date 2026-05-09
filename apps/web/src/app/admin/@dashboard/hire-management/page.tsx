@@ -366,6 +366,48 @@ export default function HireManagementPage() {
       finalY + 10,
     );
 
+    // Maintenance Breakdown Table
+    if (monthMaintenanceRecords.length > 0) {
+      doc.addPage();
+      doc.setFontSize(18);
+      doc.setTextColor(245, 158, 11); // Amber-500
+      doc.text("Maintenance Breakdown", 14, 20);
+
+      const maintenanceTableData = monthMaintenanceRecords.map((r) => [
+        new Date(r.pickupDate).toLocaleDateString(),
+        r.vehicleType,
+        r.description || "N/A",
+        `Rs. ${r.maintenanceCost?.toLocaleString() || 0}`,
+      ]);
+
+      autoTable(doc, {
+        startY: 30,
+        head: [["Date", "Vehicle Type", "Description", "Cost"]],
+        body: maintenanceTableData,
+        theme: "grid",
+        headStyles: {
+          fillColor: [245, 158, 11],
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        styles: { fontSize: 8 },
+        alternateRowStyles: { fillColor: [255, 251, 235] },
+      });
+
+      const totalMaint = monthMaintenanceRecords.reduce(
+        (sum, r) => sum + (r.maintenanceCost || 0),
+        0
+      );
+      const mFinalY = (doc as any).lastAutoTable?.finalY || 30;
+      doc.setFontSize(11);
+      doc.setTextColor(245, 158, 11);
+      doc.text(
+        `Total Maintenance Cost: Rs. ${totalMaint.toLocaleString()}`,
+        14,
+        mFinalY + 10
+      );
+    }
+
     doc.save(`Hire_Monthly_Report_${pdfMonth}.pdf`);
   };
 
@@ -476,7 +518,135 @@ export default function HireManagementPage() {
       margin: { top: 86 },
     });
 
+    // Maintenance Breakdown Table
+    if (yearMaintenanceRecords.length > 0) {
+      doc.addPage();
+      doc.setFontSize(18);
+      doc.setTextColor(245, 158, 11); // Amber-500
+      doc.text("Yearly Maintenance Breakdown", 14, 20);
+
+      const maintenanceTableData = yearMaintenanceRecords.map((r) => [
+        new Date(r.pickupDate).toLocaleDateString(),
+        r.vehicleType,
+        r.description || "N/A",
+        `Rs. ${r.maintenanceCost?.toLocaleString() || 0}`,
+      ]);
+
+      autoTable(doc, {
+        startY: 30,
+        head: [["Date", "Vehicle Type", "Description", "Cost"]],
+        body: maintenanceTableData,
+        theme: "grid",
+        headStyles: {
+          fillColor: [245, 158, 11],
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        styles: { fontSize: 8 },
+        alternateRowStyles: { fillColor: [255, 251, 235] },
+      });
+
+      const totalMaint = yearMaintenanceRecords.reduce(
+        (sum, r) => sum + (r.maintenanceCost || 0),
+        0
+      );
+      const mFinalY = (doc as any).lastAutoTable?.finalY || 30;
+      doc.setFontSize(11);
+      doc.setTextColor(245, 158, 11);
+      doc.text(
+        `Total Maintenance Cost: Rs. ${totalMaint.toLocaleString()}`,
+        14,
+        mFinalY + 10
+      );
+    }
+
     doc.save(`Hire_Yearly_Report_${pdfYear}.pdf`);
+  };
+
+  const handleDownloadMaintenancePDF = () => {
+    if (!pdfMonth) {
+      alert("Please select a month for the Maintenance PDF report.");
+      return;
+    }
+
+    const [year, month] = pdfMonth.split("-");
+
+    const maintenanceRecords = records.filter((record) => {
+      const pDate = new Date(record.pickupDate);
+      return (
+        record.hireType === "maintenance" &&
+        pDate.getFullYear() === parseInt(year || "0") &&
+        pDate.getMonth() + 1 === parseInt(month || "0")
+      );
+    });
+
+    if (maintenanceRecords.length === 0) {
+      alert(`No maintenance records found for the month: ${pdfMonth}`);
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(245, 158, 11); // Amber-600
+    doc.text("Nimesh Business Management", 14, 20);
+
+    doc.setFontSize(16);
+    doc.setTextColor(100);
+    doc.text("Vehicle Maintenance Report", 14, 30);
+
+    doc.setFontSize(10);
+    const monthName = new Date(
+      parseInt(year || "0"),
+      parseInt(month || "0") - 1,
+    ).toLocaleString("default", { month: "long" });
+    doc.text(`Report Period: ${monthName} ${year}`, 14, 38);
+    doc.text(`Generated On: ${new Date().toLocaleString()}`, 14, 44);
+
+    const tableData = maintenanceRecords.map((r) => [
+      new Date(r.pickupDate).toLocaleDateString(),
+      r.vehicleType,
+      r.description || "N/A",
+      `Rs. ${r.maintenanceCost?.toLocaleString() || 0}`,
+    ]);
+
+    autoTable(doc, {
+      startY: 50,
+      head: [
+        [
+          "Date",
+          "Vehicle Type",
+          "Description",
+          "Cost",
+        ],
+      ],
+      body: tableData,
+      theme: "grid",
+      headStyles: {
+        fillColor: [245, 158, 11],
+        textColor: 255,
+        fontStyle: "bold",
+      },
+      styles: { fontSize: 9 },
+      alternateRowStyles: { fillColor: [255, 251, 235] },
+    });
+
+    const totalCost = maintenanceRecords.reduce(
+      (sum, r) => sum + (r.maintenanceCost || 0),
+      0,
+    );
+
+    const finalY = (doc as any).lastAutoTable?.finalY || 50;
+    doc.setFontSize(12);
+    doc.setTextColor(245, 158, 11);
+    doc.text(
+      `Total Maintenance Cost: Rs. ${totalCost.toLocaleString()}`,
+      14,
+      finalY + 10,
+    );
+
+    doc.save(`Maintenance_Report_${pdfMonth}.pdf`);
   };
 
   const handleDelete = async (id: string) => {
@@ -553,6 +723,30 @@ export default function HireManagementPage() {
                     onClick={handleDownloadYearlyPDF}
                     className="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all shadow-lg active:scale-95"
                     title="Yearly PDF"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Maintenance Report */}
+            <div className="flex bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 p-2 px-4 rounded-2xl items-center gap-3 shadow-inner">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest pl-1">
+                  Maintenance
+                </span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="month"
+                    value={pdfMonth}
+                    onChange={(e) => setPdfMonth(e.target.value)}
+                    className="text-[11px] font-extrabold bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-lg px-2 py-1 outline-none"
+                  />
+                  <button
+                    onClick={handleDownloadMaintenancePDF}
+                    className="p-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all shadow-lg active:scale-95"
+                    title="Maintenance PDF"
                   >
                     <Download className="w-3.5 h-3.5" />
                   </button>
