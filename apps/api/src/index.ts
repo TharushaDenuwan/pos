@@ -6,6 +6,8 @@ import env from "./env";
 
 const app = registerRoutes(createApp());
 
+console.log("Reloading API...");
+
 configureOpenAPI(app);
 
 export type AppType = typeof app;

@@ -20,6 +20,7 @@ import worker_categories from "./worker_categories/worker_categories.index";
 import worker_skills from "./worker_skills/worker_skills.index";
 import matirialManagement from "./matirialManagement/matirialManagement.index";
 import hireManagement from "./hireManagement/hireManagement.index";
+import savingsBank from "./savingsBank/savingsBank.index";
 export function registerRoutes(app: AppOpenAPI) {
   return (
     app
@@ -40,8 +41,10 @@ export function registerRoutes(app: AppOpenAPI) {
       .route("/worker_skills", worker_skills)
       .route("/matirial-management", matirialManagement)
       .route("/hire-management", hireManagement)
+      .route("/savings-bank", savingsBank)
   );
 }
+// Trigger reload
 
 
 // stand alone router type used for api client

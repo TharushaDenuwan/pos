@@ -3,8 +3,8 @@
 import {
   IconCar,
   IconDashboard,
-  IconSettings,
-  IconDroplet
+  IconDroplet,
+  IconSettings
 } from "@tabler/icons-react";
 import * as React from "react";
 
@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import { Logo } from "../logo";
 // import { NavSecondary } from "./nav-secondary";
+import { PiggyBank } from "lucide-react";
 import { NavUser } from "./nav-user";
 
 const data = {
@@ -55,6 +56,12 @@ const data = {
       icon: IconDroplet,
       isActive: true,
       url: "/admin/oil-change",
+    },
+    {
+      title: "SAVINGS BANK",
+      icon: PiggyBank , // using Settings for now, maybe use IconBuildingBank if available, but IconSettings is imported
+      isActive: true,
+      url: "/admin/savings",
     },
   ],
 };

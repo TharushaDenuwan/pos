@@ -5,8 +5,8 @@ import {
   Banknote,
   Car,
   ChevronRight,
+  PiggyBank,
   RefreshCw,
-  Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -44,6 +44,7 @@ const VEHICLE_COLORS: Record<
 
 export default function AdminDashboardPage() {
   const [hireRecords, setHireRecords] = useState<any[]>([]);
+  const [savingsRecords, setSavingsRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [vehicleFilter, setVehicleFilter] = useState<VehicleType>("all");
   const [refreshing, setRefreshing] = useState(false);
@@ -53,13 +54,21 @@ export default function AdminDashboardPage() {
     try {
       const backendUrl =
         process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-      const res = await fetch(`${backendUrl}/api/hire-management?limit=1000`);
-      if (res.ok) {
-        const json = await res.json();
+      const [hireRes, savingsRes] = await Promise.all([
+        fetch(`${backendUrl}/api/hire-management?limit=1000`),
+        fetch(`${backendUrl}/api/savings-bank?limit=1000`)
+      ]);
+      
+      if (hireRes.ok) {
+        const json = await hireRes.json();
         setHireRecords(json.data || []);
       }
+      if (savingsRes.ok) {
+        const json = await savingsRes.json();
+        setSavingsRecords(json.data || []);
+      }
     } catch (e) {
-      console.error("Failed to fetch hire records", e);
+      console.error("Failed to fetch records", e);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -89,9 +98,15 @@ export default function AdminDashboardPage() {
     0,
   );
 
+  const totalSavingsCost = savingsRecords.reduce(
+    (s, r) => s + (r.amount || 0),
+    0
+  );
+
   const totalRevenue =
     hireRecordsOnly.reduce((s, r) => s + (r.totalCost || 0), 0) -
-    totalMaintenanceCost;
+    totalMaintenanceCost -
+    totalSavingsCost;
 
   const totalHires = hireRecordsOnly.length;
   const totalDriverSalary = hireRecordsOnly.reduce(
@@ -105,14 +120,21 @@ export default function AdminDashboardPage() {
       const maintRecs = maintenanceRecords.filter(
         (r) => r.vehicleType === type,
       );
+      const savRecs = savingsRecords.filter(
+        (r) => r.vehicleType === type,
+      );
       const maintTotal = maintRecs.reduce(
         (s, r) => s + (r.maintenanceCost || 0),
+        0,
+      );
+      const savTotal = savRecs.reduce(
+        (s, r) => s + (r.amount || 0),
         0,
       );
       return {
         type,
         count: recs.length,
-        total: recs.reduce((s, r) => s + (r.totalCost || 0), 0) - maintTotal,
+        total: recs.reduce((s, r) => s + (r.totalCost || 0), 0) - maintTotal - savTotal,
       };
     },
   );
@@ -127,10 +149,19 @@ export default function AdminDashboardPage() {
       ? maintenanceRecords
       : maintenanceRecords.filter((r) => r.vehicleType === vehicleFilter);
 
+  const filteredSavingsRecords =
+    vehicleFilter === "all"
+      ? savingsRecords
+      : savingsRecords.filter((r) => r.vehicleType === vehicleFilter);
+
   const filteredTotal =
     filteredRecords.reduce((s, r) => s + (r.totalCost || 0), 0) -
     filteredMaintenanceRecords.reduce(
       (s, r) => s + (r.maintenanceCost || 0),
+      0,
+    ) -
+    filteredSavingsRecords.reduce(
+      (s, r) => s + (r.amount || 0),
       0,
     );
 
@@ -230,25 +261,25 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        {/* Driver Salary */}
+        {/* Total Savings */}
         <div className="bg-white dark:bg-gray-900/60 border border-gray-100 dark:border-white/5 rounded-3xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <span className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
-              Driver Salary
+              Total Savings
             </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
-              <Users className="w-5 h-5 text-amber-500" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+              <PiggyBank className="w-5 h-5 text-emerald-500" />
             </div>
           </div>
           <div className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">
             {loading ? (
               <span className="opacity-30">...</span>
             ) : (
-              fmt(totalDriverSalary)
+              fmt(totalSavingsCost)
             )}
           </div>
           <p className="text-gray-400 text-xs font-medium mt-2">
-            Total driver salary from hire records
+            Saved to bank from all vehicles
           </p>
         </div>
 

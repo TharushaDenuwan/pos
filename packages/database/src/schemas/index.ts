@@ -29,3 +29,4 @@ export * from "./users.schema";
 export * from "./worker.schema";
 export * from "./matirialManagement.schema";
 export * from "./hireManagement.schema";
+export * from "./savingsBank.schema";
