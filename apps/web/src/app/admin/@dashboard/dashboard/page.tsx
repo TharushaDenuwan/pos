@@ -49,6 +49,12 @@ export default function AdminDashboardPage() {
   const [vehicleFilter, setVehicleFilter] = useState<VehicleType>("all");
   const [refreshing, setRefreshing] = useState(false);
 
+  const normalizeVehicleType = (value: any) =>
+    typeof value === "string" ? value.trim().toUpperCase() : "";
+
+  const matchesVehicleFilter = (vehicleType: any, filter: VehicleType) =>
+    filter === "all" || normalizeVehicleType(vehicleType) === filter;
+
   const fetchHires = async () => {
     setRefreshing(true);
     try {
@@ -56,9 +62,9 @@ export default function AdminDashboardPage() {
         process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
       const [hireRes, savingsRes] = await Promise.all([
         fetch(`${backendUrl}/api/hire-management?limit=1000`),
-        fetch(`${backendUrl}/api/savings-bank?limit=1000`)
+        fetch(`${backendUrl}/api/savings-bank?limit=1000`),
       ]);
-      
+
       if (hireRes.ok) {
         const json = await hireRes.json();
         setHireRecords(json.data || []);
@@ -100,7 +106,7 @@ export default function AdminDashboardPage() {
 
   const totalSavingsCost = savingsRecords.reduce(
     (s, r) => s + (r.amount || 0),
-    0
+    0,
   );
 
   const totalRevenue =
@@ -114,45 +120,51 @@ export default function AdminDashboardPage() {
     0,
   );
 
-  const vehicleBreakdown = (["KDH", "CHR", "AQUA"] as const).map(
-    (type) => {
-      const recs = hireRecordsOnly.filter((r) => r.vehicleType === type);
-      const maintRecs = maintenanceRecords.filter(
-        (r) => r.vehicleType === type,
-      );
-      const savRecs = savingsRecords.filter(
-        (r) => r.vehicleType === type,
-      );
-      const maintTotal = maintRecs.reduce(
-        (s, r) => s + (r.maintenanceCost || 0),
-        0,
-      );
-      const savTotal = savRecs.reduce(
-        (s, r) => s + (r.amount || 0),
-        0,
-      );
-      return {
-        type,
-        count: recs.length,
-        total: recs.reduce((s, r) => s + (r.totalCost || 0), 0) - maintTotal - savTotal,
-      };
-    },
-  );
+  const vehicleBreakdown = (["KDH", "CHR", "AQUA"] as const).map((type) => {
+    const recs = hireRecordsOnly.filter((r) =>
+      matchesVehicleFilter(r.vehicleType, type),
+    );
+    const maintRecs = maintenanceRecords.filter((r) =>
+      matchesVehicleFilter(r.vehicleType, type),
+    );
+    const savRecs = savingsRecords.filter((r) =>
+      matchesVehicleFilter(r.vehicleType, type),
+    );
+    const maintTotal = maintRecs.reduce(
+      (s, r) => s + (r.maintenanceCost || 0),
+      0,
+    );
+    const savTotal = savRecs.reduce((s, r) => s + (r.amount || 0), 0);
+    return {
+      type,
+      count: recs.length,
+      total:
+        recs.reduce((s, r) => s + (r.totalCost || 0), 0) -
+        maintTotal -
+        savTotal,
+    };
+  });
 
   const filteredRecords =
     vehicleFilter === "all"
       ? hireRecordsOnly
-      : hireRecordsOnly.filter((r) => r.vehicleType === vehicleFilter);
+      : hireRecordsOnly.filter((r) =>
+          matchesVehicleFilter(r.vehicleType, vehicleFilter),
+        );
 
   const filteredMaintenanceRecords =
     vehicleFilter === "all"
       ? maintenanceRecords
-      : maintenanceRecords.filter((r) => r.vehicleType === vehicleFilter);
+      : maintenanceRecords.filter((r) =>
+          matchesVehicleFilter(r.vehicleType, vehicleFilter),
+        );
 
   const filteredSavingsRecords =
     vehicleFilter === "all"
       ? savingsRecords
-      : savingsRecords.filter((r) => r.vehicleType === vehicleFilter);
+      : savingsRecords.filter((r) =>
+          matchesVehicleFilter(r.vehicleType, vehicleFilter),
+        );
 
   const filteredTotal =
     filteredRecords.reduce((s, r) => s + (r.totalCost || 0), 0) -
@@ -160,10 +172,7 @@ export default function AdminDashboardPage() {
       (s, r) => s + (r.maintenanceCost || 0),
       0,
     ) -
-    filteredSavingsRecords.reduce(
-      (s, r) => s + (r.amount || 0),
-      0,
-    );
+    filteredSavingsRecords.reduce((s, r) => s + (r.amount || 0), 0);
 
   const filteredCount = filteredRecords.length;
 
@@ -179,9 +188,7 @@ export default function AdminDashboardPage() {
   });
 
   const oilChangeByType = (["KDH", "CHR", "AQUA"] as const).map((type) => {
-    const recs = oilChangeRecords.filter(
-      (r) => r.vehicleType === type,
-    );
+    const recs = oilChangeRecords.filter((r) => r.vehicleType === type);
     return {
       type,
       count: recs.length,
@@ -441,10 +448,8 @@ export default function AdminDashboardPage() {
               Summary of maintenance costs by vehicle type.
             </p>
           </div>
-
         </div>
         <div className="p-7 space-y-6">
-
           <div className="overflow-x-auto rounded-3xl border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-gray-950">
             <table className="min-w-full text-left text-sm text-slate-800 dark:text-slate-200">
               <thead className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-white/5">
@@ -487,10 +492,8 @@ export default function AdminDashboardPage() {
               View vehicle oil changes by date and mileage.
             </p>
           </div>
-
         </div>
         <div className="p-7 space-y-6">
-
           <div className="overflow-x-auto rounded-3xl border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-gray-950">
             <table className="min-w-full text-left text-sm text-slate-800 dark:text-slate-200">
               <thead className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-white/5">
@@ -532,7 +535,10 @@ export default function AdminDashboardPage() {
                         {record.distance?.toLocaleString()} km
                       </td>
                       <td className="px-5 py-4 font-black text-amber-500">
-                        {record.distance ? (record.distance + 5000).toLocaleString() : 0} km
+                        {record.distance
+                          ? (record.distance + 5000).toLocaleString()
+                          : 0}{" "}
+                        km
                       </td>
                     </tr>
                   ))
@@ -542,7 +548,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
