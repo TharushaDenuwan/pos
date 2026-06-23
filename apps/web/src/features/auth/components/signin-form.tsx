@@ -55,7 +55,7 @@ export function SigninForm({
         },
         onSuccess(ctx) {
           toast.success("User signed in successfully!", { id: toastId });
-          router.push("/account");
+          window.location.href = "/admin/dashboard";
         },
         onError(ctx) {
           toast.error(`Failed: ${ctx.error.message}`, { id: toastId });

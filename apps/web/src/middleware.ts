@@ -37,8 +37,8 @@ export default async function authMiddleware(request: NextRequest) {
     // If Auth route and Already authenticated,
     // Redirect back
     if (authRoutes.includes(pathname) && session) {
-      if (session.user.role === "admin") {
-        return NextResponse.redirect(new URL("/admin", request.url));
+      if (session.user.role === "admin" || session.user.role === "staff") {
+        return NextResponse.redirect(new URL("/admin/dashboard", request.url));
       }
 
       return NextResponse.redirect(new URL("/", request.url));

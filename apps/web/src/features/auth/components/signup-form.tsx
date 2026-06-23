@@ -54,7 +54,6 @@ export function SignupForm({
       fetchOptions: {
         onRequest() {
           toast.loading("Registering new user...", { id: toastId });
-          router.push("/dashboard/job");
         },
         onSuccess(ctx) {
           toast.success("User registered successfully !", { id: toastId });
